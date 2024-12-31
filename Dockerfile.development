@@ -1,0 +1,24 @@
+FROM node:lts-alpine AS base
+
+ENV PNPM_HOME=/usr/local/bin
+
+# Build stage
+FROM base AS build
+WORKDIR /app
+
+RUN apk add --no-cache --virtual .gyp linux-headers python3 make g++ eudev-dev
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+COPY package*.json ./
+COPY pnpm-lock.yaml ./
+
+RUN pnpm install tiny-secp256k1 || npm install tiny-secp256k1
+RUN pnpm install || npm install
+
+COPY . .
+
+ENV NODE_ENV=development
+
+CMD ["pnpm", "run", "dev"]
+
+EXPOSE 3000

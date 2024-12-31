@@ -1,0 +1,20 @@
+services:
+  frontend:
+    image: kalyonekenobe/funders:frontend
+    platform: linux/amd64
+    build:
+      dockerfile: Dockerfile.development
+    container_name: funders-frontend
+    networks:
+      - funders-network
+    env_file:
+      - ./env/.env.development
+    ports:
+      - 3000:${DOCKER_INTERNAL_FRONTEND_PORT}
+    volumes:
+      - ./src:/app/src
+    restart: on-failure
+
+networks:
+  funders-network:
+    driver: bridge
