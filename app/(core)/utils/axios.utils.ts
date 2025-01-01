@@ -50,8 +50,8 @@ instance.interceptors.response.use(
         return instance(originalRequest);
       } catch (refreshError) {
         await removeCookies([
-          process.env.NEXT_ACCESS_TOKEN_COOKIE_NAME || 'Funders-Access-Token',
-          process.env.NEXT_REFRESH_TOKEN_COOKIE_NAME || 'Funders-Refresh-Token',
+          process.env.NEXT_COOKIE_ACCESS_TOKEN_NAME || 'Funders-Access-Token',
+          process.env.NEXT_COOKIE_REFRESH_TOKEN_NAME || 'Funders-Refresh-Token',
         ]);
 
         return Promise.reject(refreshError);

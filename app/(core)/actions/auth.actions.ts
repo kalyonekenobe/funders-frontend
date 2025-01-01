@@ -173,7 +173,7 @@ export const authWithSSOIfAuthTokenExist = async (): Promise<{
   status: HttpStatusCode;
 }> => {
   const cookieStore = await cookies();
-  const authTokenCookie = cookieStore.get(process.env.NEXT_OAUTH2_TOKEN_COOKIE_NAME || '');
+  const authTokenCookie = cookieStore.get(process.env.NEXT_COOKIE_OAUTH2_TOKEN_NAME || '');
 
   if (!authTokenCookie) {
     return {
@@ -189,7 +189,7 @@ export const authWithSSOIfAuthTokenExist = async (): Promise<{
     new TextEncoder().encode(process.env.NEXT_JWT_SECRET || ''),
   );
 
-  cookieStore.delete(process.env.NEXT_OAUTH2_TOKEN_COOKIE_NAME || '');
+  cookieStore.delete(process.env.NEXT_COOKIE_OAUTH2_TOKEN_NAME || '');
 
   if (!authTokenIsValid || !payload) {
     return {
@@ -210,7 +210,8 @@ export const authWithSSOIfAuthTokenExist = async (): Promise<{
 
     if (!response.data.length) {
       cookieStore.set(
-        process.env.NEXT_ACCOUNT_COMPLETION_TOKEN_NAME || 'Funders-Account-Completion-Token-Name',
+        process.env.NEXT_COOKIE_ACCOUNT_COMPLETION_TOKEN_NAME ||
+          'Funders-Account-Completion-Token-Name',
         await new jose.SignJWT({ email, provider, referer })
           .setProtectedHeader({ alg: 'HS256' })
           .sign(new TextEncoder().encode(process.env.NEXT_JWT_SECRET || '')),
@@ -320,7 +321,9 @@ export const extractAccountCompletionMetadata = async (): Promise<{
   status: HttpStatusCode;
 }> => {
   const cookieStore = await cookies();
-  const accountCompletionToken = cookieStore.get('process.env.NEXT_ACCOUNT_COMPLETION_TOKEN_NAME');
+  const accountCompletionToken = cookieStore.get(
+    'process.env.NEXT_COOKIE_ACCOUNT_COMPLETION_TOKEN_NAME',
+  );
 
   if (!accountCompletionToken) {
     return {
@@ -339,7 +342,7 @@ export const extractAccountCompletionMetadata = async (): Promise<{
     new TextEncoder().encode(process.env.NEXT_JWT_SECRET!),
   );
 
-  cookieStore.delete('process.env.NEXT_ACCOUNT_COMPLETION_TOKEN_NAME');
+  cookieStore.delete('process.env.NEXT_COOKIE_ACCOUNT_COMPLETION_TOKEN_NAME');
 
   if (!accountCompletionTokenIsValid || !payload) {
     return {
@@ -377,7 +380,7 @@ export const extractAccountCompletionMetadata = async (): Promise<{
 export const getAuthInfo = async (): Promise<AuthInfo | null> => {
   const cookieStore = await cookies();
   const payload = (await jose.decodeJwt(
-    cookieStore.get(process.env.NEXT_ACCESS_TOKEN_COOKIE_NAME || 'Funders-Access-Token')?.value ||
+    cookieStore.get(process.env.NEXT_COOKIE_ACCESS_TOKEN_NAME || 'Funders-Access-Token')?.value ||
       '',
   )) as { [key: string]: any };
 
@@ -391,8 +394,8 @@ export const getAuthInfo = async (): Promise<AuthInfo | null> => {
 
 export const signOut = async () => {
   const cookieStore = await cookies();
-  cookieStore.delete(process.env.NEXT_ACCESS_TOKEN_COOKIE_NAME || 'Funders-Access-Token');
-  cookieStore.delete(process.env.NEXT_REFRESH_TOKEN_COOKIE_NAME || 'Funders-Refresh-Token');
+  cookieStore.delete(process.env.NEXT_COOKIE_ACCESS_TOKEN_NAME || 'Funders-Access-Token');
+  cookieStore.delete(process.env.NEXT_COOKIE_REFRESH_TOKEN_NAME || 'Funders-Refresh-Token');
 
   return redirect(ApplicationRoutes.SignIn);
 };

@@ -34,7 +34,7 @@ export const GET = async (request: NextRequest) => {
   const cookieStore = await cookies();
 
   cookieStore.set(
-    process.env.NEXT_OAUTH2_TOKEN_COOKIE_NAME || '',
+    process.env.NEXT_COOKIE_OAUTH2_TOKEN_NAME || '',
     await new jose.SignJWT({
       provider: AuthProviders.Discord,
       email,
