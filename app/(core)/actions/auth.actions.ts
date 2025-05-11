@@ -106,7 +106,7 @@ export const signUp = async (state: any, formData: FormData) => {
         break;
     }
 
-    const response = await axios.post(registrationUrl, user);
+    const response = await axios.post(registrationUrl, data);
 
     if (response.status === HttpStatusCode.Created) {
       return { ...state, errors: {} };
@@ -176,8 +176,14 @@ export const signUp = async (state: any, formData: FormData) => {
   };
 };
 
-export const authWithSSO = async (provider: AuthProviders) => {
-  return redirect(`/api/auth/${provider}`);
+export const authWithSSO = async (provider: AuthProviders, referer: string) => {
+  const { status, data } = await axios.post(`/oauth2/${provider}`, { referer });
+
+  if (status !== HttpStatusCode.Created) {
+    throw new Error('Cannot generate OAuth2 link. Please, try again later');
+  }
+
+  return redirect(data.url);
 };
 
 export const authWithSSOIfAuthTokenExist = async (): Promise<{
@@ -197,6 +203,7 @@ export const authWithSSOIfAuthTokenExist = async (): Promise<{
   }
 
   const payload = await jose.decodeJwt(authTokenCookie.value);
+
   const authTokenIsValid = await jose.jwtVerify(
     authTokenCookie.value,
     new TextEncoder().encode(process.env.NEXT_JWT_SECRET || ''),
@@ -238,16 +245,31 @@ export const authWithSSOIfAuthTokenExist = async (): Promise<{
         data: {
           error:
             'The user with such email is not registered. Please, complete the registration process',
-          redirectUrl: `${process.env.FRONTEND_URL}/${ApplicationRoutes.AccountCompletion}`,
+          redirectUrl: `${process.env.NEXT_PUBLIC_FRONTEND_URL}/${ApplicationRoutes.AccountCompletion}`,
         },
         status: HttpStatusCode.TemporaryRedirect,
       };
     } else {
-      await axios.post(`/auth/login/${provider}`, undefined, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
+      let response = { data: {} };
+
+      switch (provider) {
+        case AuthProviders.Discord:
+          response = await axios.post(`/auth/login/${provider}`, {
+            discordAccessToken: accessToken,
+          });
+          break;
+        case AuthProviders.Google:
+          response = await axios.post(`/auth/login/${provider}`, {
+            googleAccessToken: accessToken,
+          });
+          break;
+      }
+
+      return {
+        notify: true,
+        data: response.data,
+        status: HttpStatusCode.Created,
+      };
     }
   } catch (error: any) {
     return { notify: true, data: { error: error.toString() }, status: HttpStatusCode.Unauthorized };
@@ -301,7 +323,7 @@ export const extractAccountCompletionMetadata = async (): Promise<{
       notify: true,
       data: {
         error: 'The account completion token is missing',
-        redirectUrl: `${process.env.FRONTEND_URL}/${ApplicationRoutes.SignIn}`,
+        redirectUrl: `${process.env.NEXT_PUBLIC_FRONTEND_URL}/${ApplicationRoutes.SignIn}`,
       },
       status: HttpStatusCode.TemporaryRedirect,
     };
@@ -320,7 +342,7 @@ export const extractAccountCompletionMetadata = async (): Promise<{
       notify: true,
       data: {
         error: 'The account completion token is invalid or expired',
-        redirectUrl: `${process.env.FRONTEND_URL}/${ApplicationRoutes.SignIn}`,
+        redirectUrl: `${process.env.NEXT_PUBLIC_FRONTEND_URL}/${ApplicationRoutes.SignIn}`,
       },
       status: HttpStatusCode.TemporaryRedirect,
     };

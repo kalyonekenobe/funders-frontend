@@ -20,7 +20,7 @@ const SSOAuthenticationButtons: FC<SSOAuthenticationButtonsProps> = ({
         <button
           type='button'
           className='inline-flex justify-center items-center border rounded-lg p-2.5 font-medium text-gray-500 text-center hover:bg-slate-100 transition-[0.3s_ease]'
-          onClick={() => authWithSSO(AuthProviders.Google)}
+          onClick={() => authWithSSO(AuthProviders.Google, location.href)}
         >
           <GoogleIcon className='size-5 me-3' />
           Sign {type === 'sign-in' ? 'in' : 'up'} with Google
@@ -30,7 +30,7 @@ const SSOAuthenticationButtons: FC<SSOAuthenticationButtonsProps> = ({
         <button
           type='button'
           className='inline-flex justify-center items-center border rounded-lg p-2.5 font-medium text-gray-500 text-center hover:bg-slate-100 transition-[0.3s_ease]'
-          onClick={() => authWithSSO(AuthProviders.Discord)}
+          onClick={() => authWithSSO(AuthProviders.Discord, location.href)}
         >
           <DiscordIcon className='size-5 me-3' />
           Sign {type === 'sign-in' ? 'in' : 'up'} with Discord
