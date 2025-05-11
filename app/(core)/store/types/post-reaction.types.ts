@@ -8,7 +8,9 @@ import { User } from '@/app/(core)/store/types/user.types';
 export interface PostReaction {
   userId: string;
   postId: string;
-  reactionType: UserReactionTypeEnum;
+  reaction: UserReactionTypeEnum;
+  createdAt: Date;
+  updatedAt: Date;
   datetime: Date;
   user?: User;
   post?: Post;

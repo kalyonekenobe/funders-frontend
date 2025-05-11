@@ -21,7 +21,7 @@ const fetchData = async (id: string) => {
   const categories = await getAllPostCategories();
   const post = await getPost(id, {
     include: {
-      categories: true,
+      categoriesToPosts: true,
       attachments: true,
     },
   });
@@ -30,7 +30,8 @@ const fetchData = async (id: string) => {
 };
 
 const EditPostPage: FC<EditPostPageProps> = async ({ params }) => {
-  const { categories, post } = await fetchData(params.id);
+  const { id } = await params;
+  const { categories, post } = await fetchData(id);
 
   if (!post) {
     notFound();

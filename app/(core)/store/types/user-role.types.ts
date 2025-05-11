@@ -1,8 +1,7 @@
-import { User } from "@/app/(core)/store/types/user.types";
-
+import { User } from '@/app/(core)/store/types/user.types';
 
 export enum UserRoleEnum {
-  Default = 'Default',
+  User = 'User',
   Volunteer = 'Volunteer',
   Administrator = 'Administrator',
 }

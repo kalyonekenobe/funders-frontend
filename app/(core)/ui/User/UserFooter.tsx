@@ -13,7 +13,7 @@ import { createPortal } from 'react-dom';
 
 export interface UserCardFooterProps extends HTMLAttributes<HTMLDivElement> {
   user: User;
-  authenticatedUser: AuthInfo;
+  authenticatedUser: User;
 }
 
 export interface UserCardFooterState {
@@ -37,7 +37,7 @@ const UserFooter: FC<UserCardFooterProps> = ({ user, authenticatedUser, ...props
     ...initialState,
     isFollowed: Boolean(
       user.followers?.find((follower: Following) => {
-        return follower.followerId === authenticatedUser?.userId;
+        return follower.followerId === authenticatedUser?.id;
       }),
     ),
     followers: user.followers || [],
@@ -66,7 +66,7 @@ const UserFooter: FC<UserCardFooterProps> = ({ user, authenticatedUser, ...props
                   id={follower.followerId}
                   firstName={follower.follower?.firstName || ''}
                   lastName={follower.follower?.lastName || ''}
-                  avatar={follower.follower?.avatar || null}
+                  image={follower.follower?.image || null}
                   className='inline-flex items-center rounded p-1 hover:bg-slate-100 transition-[0.3s_ease]'
                 />
               ))}
@@ -101,7 +101,7 @@ const UserFooter: FC<UserCardFooterProps> = ({ user, authenticatedUser, ...props
                   id={following.userId}
                   firstName={following.user?.firstName || ''}
                   lastName={following.user?.lastName || ''}
-                  avatar={following.user?.avatar || null}
+                  image={following.user?.image || null}
                   className='inline-flex items-center rounded p-1 hover:bg-slate-100 transition-[0.3s_ease]'
                 />
               ))}
@@ -161,18 +161,16 @@ const UserFooter: FC<UserCardFooterProps> = ({ user, authenticatedUser, ...props
               followers: follower
                 ? [
                     {
-                      followerId: authenticatedUser.userId,
+                      followerId: authenticatedUser.id,
                       userId: user.id,
                       follower: {
                         ...authenticatedUser,
-                        id: authenticatedUser.userId,
+                        id: authenticatedUser.id,
                       } as any,
                     },
                     ...state.followers,
                   ]
-                : state.followers.filter(
-                    follower => follower.followerId !== authenticatedUser.userId,
-                  ),
+                : state.followers.filter(follower => follower.followerId !== authenticatedUser.id),
             })
           }
         />

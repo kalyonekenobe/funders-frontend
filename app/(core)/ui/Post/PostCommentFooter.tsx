@@ -22,7 +22,7 @@ import { createPortal } from 'react-dom';
 export interface PostCommentFooterProps extends HTMLAttributes<HTMLDivElement> {
   post: Post;
   postComment: PostComment;
-  authenticatedUser: AuthInfo;
+  authenticatedUser: User;
   onReply?: (comment: PostComment) => void;
 }
 
@@ -49,7 +49,7 @@ const PostCommentFooter: FC<PostCommentFooterProps> = ({
     ...initialState,
     usersThatLikedPostComment: (postComment.reactions || []).map(reaction => reaction.user!),
     isLiked: Boolean(
-      (postComment.reactions || []).find(reaction => reaction.userId === authenticatedUser?.userId),
+      (postComment.reactions || []).find(reaction => reaction.userId === authenticatedUser?.id),
     ),
   });
   const { createNotification } = useNotification();
@@ -68,7 +68,7 @@ const PostCommentFooter: FC<PostCommentFooterProps> = ({
           ...state,
           isLiked: true,
           usersThatLikedPostComment: [
-            { ...authenticatedUser, id: authenticatedUser.userId } as any,
+            { ...authenticatedUser, id: authenticatedUser.id } as any,
             ...state.usersThatLikedPostComment,
           ],
         });
@@ -86,7 +86,7 @@ const PostCommentFooter: FC<PostCommentFooterProps> = ({
           ...state,
           isLiked: false,
           usersThatLikedPostComment: state.usersThatLikedPostComment.filter(
-            user => user.id !== authenticatedUser.userId,
+            user => user.id !== authenticatedUser.id,
           ),
         });
       }
@@ -115,7 +115,7 @@ const PostCommentFooter: FC<PostCommentFooterProps> = ({
                   id={user.id}
                   firstName={user.firstName || ''}
                   lastName={user.lastName || ''}
-                  avatar={user.avatar || null}
+                  image={user.image || null}
                   className='inline-flex items-center rounded p-1 hover:bg-slate-100 transition-[0.3s_ease]'
                 />
               ))}
@@ -136,12 +136,7 @@ const PostCommentFooter: FC<PostCommentFooterProps> = ({
             {postComment.attachments?.map(attachment => (
               <span
                 onClick={() => {
-                  fetch(
-                    resolveFilePath(
-                      attachment.file,
-                      attachment.resourceType as 'image' | 'video' | 'raw',
-                    ),
-                  )
+                  fetch(resolveFilePath(attachment.location))
                     .then(response => response.blob())
                     .then(blob => {
                       const url = window.URL.createObjectURL(new Blob([blob]));
@@ -149,9 +144,9 @@ const PostCommentFooter: FC<PostCommentFooterProps> = ({
                       link.href = url;
                       link.setAttribute(
                         'download',
-                        `${attachment.filename || attachment.file}${
-                          getFileExtension(attachment.file)
-                            ? `.${getFileExtension(attachment.file)}`
+                        `${attachment.filename || attachment.location}${
+                          getFileExtension(attachment.location)
+                            ? `.${getFileExtension(attachment.location)}`
                             : ''
                         }`,
                       );
@@ -164,7 +159,7 @@ const PostCommentFooter: FC<PostCommentFooterProps> = ({
                 className='inline-flex text-center items-center justify-center border bg-slate-100 hover:bg-slate-200 px-2 py-0.5 rounded text-xs cursor-pointer transition-[0.3s_ease] text-slate-600 font-medium'
               >
                 <FileIcon className='size-3 stroke-2 me-1' />
-                {attachment.filename || attachment.file}
+                {attachment.filename || attachment.location}
               </span>
             ))}
           </div>

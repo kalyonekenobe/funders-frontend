@@ -13,14 +13,14 @@ export interface UserDetailsPageProps {
 
 const fetchData = async (id: string) => {
   const user = await getUser(id, {
-    select: {
+    include: {
       posts: {
         where: { isDraft: false },
         include: {
           donations: true,
-          reactions: { include: { user: true }, orderBy: { datetime: 'desc' } },
+          reactions: { include: { user: true }, orderBy: { createdAt: 'desc' } },
           comments: true,
-          categories: true,
+          categoriesToPosts: true,
         },
       },
       followers: { include: { follower: true } },

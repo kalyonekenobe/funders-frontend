@@ -8,5 +8,5 @@ export interface AuthInfo {
   firstName: string;
   lastName: string;
   permissions: number;
-  avatar: string | null;
+  image: string | null;
 }

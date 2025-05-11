@@ -1,13 +1,19 @@
 'use client';
 
-import { udpateUser } from '@/app/(core)/actions/user.actions';
+import { updateUser } from '@/app/(core)/actions/user.actions';
 import useNotification from '@/app/(core)/hooks/notifications.hooks';
 import { AuthInfo } from '@/app/(core)/store/types/app.types';
 import { Following } from '@/app/(core)/store/types/following.types';
 import { UserRoleEnum } from '@/app/(core)/store/types/user-role.types';
 import { User } from '@/app/(core)/store/types/user.types';
 import ToggleFollowButton from '@/app/(core)/ui/Controls/ToggleFollowButton';
-import { BoltIcon, EditIcon, FollowIcon, MessageIcon, UnfollowIcon } from '@/app/(core)/ui/Icons/Icons';
+import {
+  BoltIcon,
+  EditIcon,
+  FollowIcon,
+  MessageIcon,
+  UnfollowIcon,
+} from '@/app/(core)/ui/Icons/Icons';
 import Modal from '@/app/(core)/ui/Modal/Modal';
 import UserListItem from '@/app/(core)/ui/User/UserListItem';
 import { NotificationType } from '@/app/(core)/utils/notifications.utils';
@@ -18,7 +24,7 @@ import { createPortal } from 'react-dom';
 
 export interface UserDetailsProfileFooterProps extends HTMLAttributes<HTMLDivElement> {
   user: User;
-  authenticatedUser: AuthInfo;
+  authenticatedUser: User;
 }
 
 export interface UserDetailsProfileFooterState {
@@ -48,7 +54,7 @@ const UserDetailsProfileFooter: FC<UserDetailsProfileFooterProps> = ({
     ...initialState,
     isFollowed: Boolean(
       user.followers?.find((follower: Following) => {
-        return follower.followerId === authenticatedUser?.userId;
+        return follower.followerId === authenticatedUser?.id;
       }),
     ),
     followers: user.followers || [],
@@ -72,7 +78,7 @@ const UserDetailsProfileFooter: FC<UserDetailsProfileFooterProps> = ({
                   const formData = new FormData();
                   formData.set('id', user.id);
                   formData.set('role', UserRoleEnum.Volunteer);
-                  const response = await udpateUser({}, formData);
+                  const response = await updateUser({}, formData);
 
                   if (response?.errors?.nested?.length > 0 || response?.errors?.global) {
                     createNotification({
@@ -125,7 +131,7 @@ const UserDetailsProfileFooter: FC<UserDetailsProfileFooterProps> = ({
                   id={follower.followerId}
                   firstName={follower.follower?.firstName || ''}
                   lastName={follower.follower?.lastName || ''}
-                  avatar={follower.follower?.avatar || null}
+                  image={follower.follower?.image || null}
                   className='inline-flex items-center rounded p-1 hover:bg-slate-100 transition-[0.3s_ease]'
                 />
               ))}
@@ -160,7 +166,7 @@ const UserDetailsProfileFooter: FC<UserDetailsProfileFooterProps> = ({
                   id={following.userId}
                   firstName={following.user?.firstName || ''}
                   lastName={following.user?.lastName || ''}
-                  avatar={following.user?.avatar || null}
+                  image={following.user?.image || null}
                   className='inline-flex items-center rounded p-1 hover:bg-slate-100 transition-[0.3s_ease]'
                 />
               ))}
@@ -191,7 +197,7 @@ const UserDetailsProfileFooter: FC<UserDetailsProfileFooterProps> = ({
           </span>
         </div>
         <div className='grid grid-cols-2 gap-3 mt-3'>
-          {authenticatedUser.userId === user.id ? (
+          {authenticatedUser.id === user.id ? (
             <>
               <a
                 href={ApplicationRoutes.ProfileEdit}
@@ -200,7 +206,7 @@ const UserDetailsProfileFooter: FC<UserDetailsProfileFooterProps> = ({
                 <EditIcon className='size-4 stroke-2 me-2' />
                 Edit information
               </a>
-              {user.role === UserRoleEnum.Default && (
+              {user.role === UserRoleEnum.User && (
                 <button
                   type='button'
                   className='inline-flex items-center justify-center text-center rounded bg-violet-500 font-medium text-white text-xs px-2 sm:text-sm sm:px-5 py-1.5 hover:bg-violet-600 transition-[0.3s_ease] cursor-pointer'
@@ -231,7 +237,7 @@ const UserDetailsProfileFooter: FC<UserDetailsProfileFooterProps> = ({
                 }
                 isFollowed={Boolean(
                   state.followers.find(
-                    (follower: Following) => follower.followerId === authenticatedUser?.userId,
+                    (follower: Following) => follower.followerId === authenticatedUser?.id,
                   ),
                 )}
                 updateFollowers={follower =>
@@ -240,17 +246,17 @@ const UserDetailsProfileFooter: FC<UserDetailsProfileFooterProps> = ({
                     followers: follower
                       ? [
                           {
-                            followerId: authenticatedUser.userId,
+                            followerId: authenticatedUser.id,
                             userId: user.id,
                             follower: {
                               ...authenticatedUser,
-                              id: authenticatedUser.userId,
+                              id: authenticatedUser.id,
                             } as any,
                           },
                           ...state.followers,
                         ]
                       : state.followers.filter(
-                          follower => follower.followerId !== authenticatedUser.userId,
+                          follower => follower.followerId !== authenticatedUser.id,
                         ),
                   })
                 }

@@ -13,7 +13,7 @@ import PostCommentFooter from '@/app/(core)/ui/Post/PostCommentFooter';
 export interface PostCommentProps {
   post: Post;
   comment: PostCommentType;
-  authenticatedUser: AuthInfo;
+  authenticatedUser: User;
   onEdit?: (comment: PostCommentType) => void;
   onRemove?: (comment: PostCommentType) => void;
   onReply?: (comment: PostCommentType) => void;
@@ -36,7 +36,7 @@ const PostComment: FC<PostCommentProps> = ({
         <div className='flex items-center'>
           <div className='w-[35px] h-[35px] flex flex-1 aspect-square rounded relative me-3 overflow-hidden'>
             <Image
-              src={resolveImage(comment.author?.avatar, 'default-profile-image')}
+              src={resolveImage(comment.author?.image, 'default-profile-image')}
               alt={`${comment.author?.firstName} ${comment.author?.lastName}'s profile image`}
               fill={true}
               sizes='100%, 100%'

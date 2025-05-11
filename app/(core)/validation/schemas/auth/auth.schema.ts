@@ -70,7 +70,7 @@ export const RegisterSchema = strictObject({
       'The user must be at least 14 years old.',
     ), // Min user age can be 14 years
   ),
-  wallet: pipe(
+  walletPublicKey: pipe(
     string('Please choose a valid solana wallet address'),
     trim(),
     minLength(1, 'Please choose a valid solana wallet address'),

@@ -6,12 +6,12 @@ import { useRouter } from 'next/navigation';
 import useNotification from '@/app/(core)/hooks/notifications.hooks';
 import { NotificationType } from '@/app/(core)/utils/notifications.utils';
 import { extractAccountCompletionMetadata, signUp } from '@/app/(core)/actions/auth.actions';
-import { capitalize } from '@/app/(core)/utils/app.utils';
 import { HttpStatusCode } from 'axios';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { SolanaIcon } from '@/app/(core)/ui/Icons/Icons';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { ApplicationRoutes } from '@/app/(core)/utils/routes.utils';
+import _ from 'lodash';
 
 export interface AccountCompletionFormState {
   isWalletConnecting: boolean;
@@ -119,7 +119,7 @@ const AccountCompletionForm: FC = () => {
   const submit = async (formData: FormData) => {
     if (metadata.isLoaded && metadata.email && metadata.provider) {
       formData.append('email', metadata.email);
-      formData.append('registrationMethod', capitalize(metadata.provider));
+      formData.append('registrationMethod', _.capitalize(metadata.provider));
       const response = await signUp(state, formData);
       setState(response);
 

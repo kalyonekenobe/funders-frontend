@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { User } from '@/app/(core)/store/types/user.types';
 import useNotification from '@/app/(core)/hooks/notifications.hooks';
-import { udpateUser } from '@/app/(core)/actions/user.actions';
+import { updateUser } from '@/app/(core)/actions/user.actions';
 import { NotificationType } from '@/app/(core)/utils/notifications.utils';
 import { ApplicationRoutes } from '@/app/(core)/utils/routes.utils';
 import { resolveImage } from '@/app/(core)/utils/app.utils';
@@ -23,7 +23,7 @@ export interface EditProfileFormState {
     }
   >;
   isAvatarRemoved: boolean;
-  avatar: string | null;
+  image: string | null;
   isLoaded: boolean;
   isSubmited: boolean;
   errors: any;
@@ -35,7 +35,7 @@ const initialState: EditProfileFormState = {
   isAvatarRemoved: false,
   isLoaded: false,
   isSubmited: false,
-  avatar: null,
+  image: null,
 };
 
 const EditProfileForm: FC<EditProfileFormProps> = ({ user, ...props }) => {
@@ -51,14 +51,14 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ user, ...props }) => {
       password: undefined,
       confirmPassword: undefined,
     } as EditProfileFormState['data'],
-    avatar: user.avatar,
+    image: user.image,
   });
   const router = useRouter();
   const { createNotification } = useNotification();
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const avatar = (event.target as HTMLFormElement).avatar.files[0];
+    const image = (event.target as HTMLFormElement).image.files[0];
     const formData = new FormData();
 
     formData.set('id', user.id);
@@ -70,10 +70,10 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ user, ...props }) => {
       }
     });
 
-    if (!state.avatar) {
-      formData.set('avatar', '');
-    } else if (avatar) {
-      formData.set('avatar', avatar);
+    if (!state.image) {
+      formData.set('image', '');
+    } else if (image) {
+      formData.set('image', image);
     }
 
     await submit(formData);
@@ -81,7 +81,7 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ user, ...props }) => {
 
   const submit = async (formData: FormData) => {
     setState({ ...state, isSubmited: true });
-    const response = await udpateUser(state, formData);
+    const response = await updateUser(state, formData);
     setState(response);
 
     if (response.errors.length > 0) {
@@ -119,9 +119,9 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ user, ...props }) => {
           <div className='relative flex w-full max-w-[256px] rounded overflow-hidden aspect-square border'>
             <Image
               src={
-                state.avatar === user.avatar
-                  ? resolveImage(state.avatar, 'profile-image-placeholder')
-                  : state.avatar ||
+                state.image === user.image
+                  ? resolveImage(state.image, 'profile-image-placeholder')
+                  : state.image ||
                     process.env.NEXT_PUBLIC_PROFILE_IMAGE_PLACEHOLDER_PATH ||
                     '/profile-image-placeholder.webp'
               }
@@ -133,28 +133,28 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ user, ...props }) => {
             />
           </div>
           <label
-            htmlFor='profile-avatar'
+            htmlFor='profile-image'
             className='text-blue-600 font-medium text-sm cursor-pointer hover:text-blue-700 mt-2 transition-[0.3s_ease]'
           >
-            Choose avatar
+            Choose image
           </label>
           <span
             className='text-red-600 font-medium text-sm mb-1 cursor-pointer hover:text-red-700 transition-[0.3s_ease]'
-            onClick={() => setState({ ...state, avatar: null })}
+            onClick={() => setState({ ...state, image: null })}
           >
-            Remove avatar
+            Remove image
           </span>
           <input
             type='file'
-            name='avatar'
-            id='profile-avatar'
+            name='image'
+            id='profile-image'
             className={`border p-3 rounded-lg text-gray-700 font-medium hidden`}
             onChange={event =>
               setState({
                 ...state,
-                avatar: event.target.files?.[0]
+                image: event.target.files?.[0]
                   ? URL.createObjectURL(event.target.files[0])
-                  : user.avatar,
+                  : user.image,
               })
             }
           />
@@ -393,7 +393,7 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ user, ...props }) => {
                 htmlFor='profile-confirm-password'
                 className='text-gray-500 font-medium text-sm mb-1'
               >
-                New password:
+                New password confirmation:
               </label>
               <PasswordInput
                 name='confirmPassword'

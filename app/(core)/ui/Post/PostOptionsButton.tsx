@@ -13,10 +13,11 @@ import { removePost } from '@/app/(core)/actions/post.actions';
 import { NotificationType } from '@/app/(core)/utils/notifications.utils';
 import { EditIcon, FlagIcon, RemoveIcon } from '@/app/(core)/ui/Icons/Icons';
 import { ApplicationRoutes } from '@/app/(core)/utils/routes.utils';
+import { User } from '@/app/(core)/store/types/user.types';
 
 export interface PostOptionsButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   post: Post;
-  authenticatedUser: AuthInfo;
+  authenticatedUser: User;
 }
 
 export interface PostOptionsButtonState {
@@ -107,7 +108,7 @@ const PostOptionsButton: FC<PostOptionsButtonProps> = ({
               <FlagIcon className='size-3 stroke-2 me-2' />
               Report
             </button>
-            {authenticatedUser.userId === post.author?.id && (
+            {authenticatedUser.id === post.author?.id && (
               <>
                 <Link
                   href={ApplicationRoutes.PostEdit.replace(':id', post.id)}

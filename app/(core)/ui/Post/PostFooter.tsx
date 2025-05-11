@@ -19,7 +19,7 @@ import DonatePostButton from '@/app/(core)/ui/Post/DonatePostButton';
 
 export interface PostFooterProps extends HTMLAttributes<HTMLDivElement> {
   post: Post;
-  authenticatedUser: AuthInfo;
+  authenticatedUser: User;
 }
 
 export interface PostFooterState {
@@ -41,7 +41,7 @@ const PostFooter: FC<PostFooterProps> = ({ post, authenticatedUser, ...props }) 
     ...initialState,
     usersThatLikedPost: (post.reactions || []).map(reaction => reaction.user!),
     isLiked: Boolean(
-      (post.reactions || []).find(reaction => reaction.userId === authenticatedUser.userId),
+      (post.reactions || []).find(reaction => reaction.userId === authenticatedUser.id),
     ),
     comments: post.comments || [],
   });
@@ -61,7 +61,7 @@ const PostFooter: FC<PostFooterProps> = ({ post, authenticatedUser, ...props }) 
           ...state,
           isLiked: true,
           usersThatLikedPost: [
-            { ...authenticatedUser, id: authenticatedUser.userId } as any,
+            { ...authenticatedUser, id: authenticatedUser.id } as any,
             ...state.usersThatLikedPost,
           ],
         });
@@ -79,7 +79,7 @@ const PostFooter: FC<PostFooterProps> = ({ post, authenticatedUser, ...props }) 
           ...state,
           isLiked: false,
           usersThatLikedPost: state.usersThatLikedPost.filter(
-            user => user.id !== authenticatedUser.userId,
+            user => user.id !== authenticatedUser.id,
           ),
         });
       }
@@ -108,7 +108,7 @@ const PostFooter: FC<PostFooterProps> = ({ post, authenticatedUser, ...props }) 
                   id={user.id}
                   firstName={user.firstName || ''}
                   lastName={user.lastName || ''}
-                  avatar={user.avatar || null}
+                  image={user.image || null}
                   className='inline-flex items-center rounded p-1 hover:bg-slate-100 transition-[0.3s_ease]'
                 />
               ))}

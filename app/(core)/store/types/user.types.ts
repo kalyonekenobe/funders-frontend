@@ -16,10 +16,10 @@ export interface User {
   email: string;
   phone: string | null;
   bio: string | null;
-  avatar: string | null;
+  image: string | null;
   refreshToken: string | null;
   stripeCustomerId: string;
-  registeredAt: Date;
+  createdAt: Date;
   userRegistrationMethod?: UserRegistrationMethod;
   userRole?: UserRole;
   followings?: Following[];

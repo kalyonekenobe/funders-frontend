@@ -27,9 +27,9 @@ const fetchData = async () => {
     include: {
       author: true,
       donations: true,
-      reactions: { include: { user: true }, orderBy: { datetime: 'desc' } },
+      reactions: { include: { user: true }, orderBy: { createdAt: 'desc' } },
       comments: true,
-      categories: true,
+      categoriesToPosts: true,
     },
     orderBy: { createdAt: 'desc' },
   });
@@ -46,7 +46,7 @@ const HomePage: FC = async () => {
         <div className='flex flex-col flex-1 items-center'>
           <div className='flex justify-between w-full max-w-3xl px-5 items-center mb-5'>
             <h3 className='text-gray-600 font-bold text-xl'>Posts</h3>
-            {((authenticatedUser?.permissions || 0) & Permissions.MANAGE_POSTS) ===
+            {((authenticatedUser?.userRole?.permissions || 0) & Permissions.MANAGE_POSTS) ===
               Permissions.MANAGE_POSTS && (
               <Link
                 href={ApplicationRoutes.PostCreate}

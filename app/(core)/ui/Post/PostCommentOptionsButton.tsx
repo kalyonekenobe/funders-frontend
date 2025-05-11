@@ -14,7 +14,7 @@ import { createPortal } from 'react-dom';
 
 export interface PostCommentOptionsButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   postComment: PostComment;
-  authenticatedUser: AuthInfo;
+  authenticatedUser: User;
   onRemove?: (comment: PostComment) => void;
   onEdit?: (comment: PostComment) => void;
 }
@@ -110,7 +110,7 @@ const PostCommentOptionsButton: FC<PostCommentOptionsButtonProps> = ({
               <FlagIcon className='size-3 stroke-2 me-2' />
               Report
             </button>
-            {authenticatedUser.userId === postComment.author?.id && (
+            {authenticatedUser.id === postComment.author?.id && (
               <>
                 <EditPostCommentButton
                   onEditComment={onEdit}

@@ -27,18 +27,18 @@ const fetchData = async (id: string) => {
     include: {
       author: true,
       donations: true,
-      reactions: { include: { user: true }, orderBy: { datetime: 'desc' } },
+      reactions: { include: { user: true }, orderBy: { createdAt: 'desc' } },
       comments: {
         include: {
           parentComment: { include: { author: true } },
           author: true,
-          reactions: { include: { user: true }, orderBy: { datetime: 'desc' } },
+          reactions: { include: { user: true }, orderBy: { createdAt: 'desc' } },
           attachments: true,
         },
         orderBy: { createdAt: 'asc' },
       },
       attachments: true,
-      categories: true,
+      categoriesToPosts: true,
     },
   });
 
@@ -46,7 +46,8 @@ const fetchData = async (id: string) => {
 };
 
 export const generateMetadata = async ({ params }: PostDetailsPageProps): Promise<Metadata> => {
-  const { post } = await fetchData(params.id);
+  const { id } = await params;
+  const { post } = await fetchData(id);
 
   return {
     title: `"${post?.title}" | Funders`,
@@ -55,7 +56,8 @@ export const generateMetadata = async ({ params }: PostDetailsPageProps): Promis
 };
 
 const PostDetailsPage: FC<PostDetailsPageProps> = async ({ params }) => {
-  const { authenticatedUser, post } = await fetchData(params.id);
+  const { id } = await params;
+  const { authenticatedUser, post } = await fetchData(id);
   const intl = Intl.DateTimeFormat('en-US', { dateStyle: 'long', timeStyle: 'short' });
 
   if (!post) {
@@ -73,7 +75,7 @@ const PostDetailsPage: FC<PostDetailsPageProps> = async ({ params }) => {
             <div className='flex items-center'>
               <div className='w-[35px] h-[35px] flex flex-1 aspect-square rounded relative me-3 overflow-hidden'>
                 <Image
-                  src={resolveImage(post.author?.avatar, 'default-profile-image')}
+                  src={resolveImage(post.author?.image, 'default-profile-image')}
                   alt={`${post.author?.firstName} ${post.author?.lastName}'s profile image`}
                   fill={true}
                   sizes='100%, 100%'
@@ -112,12 +114,12 @@ const PostDetailsPage: FC<PostDetailsPageProps> = async ({ params }) => {
           )}
         </h3>
         <div className='flex gap-2 mt-3 mb-5 flex-wrap'>
-          {post.categories?.map(category => (
+          {post.categoriesToPosts?.map(categoryToPost => (
             <span
-              key={category.category}
+              key={categoryToPost.category}
               className='bg-indigo-400 text-white font-medium text-sm px-2 py-0.5 rounded'
             >
-              {category.category}
+              {categoryToPost.category}
             </span>
           ))}
         </div>
@@ -131,7 +133,7 @@ const PostDetailsPage: FC<PostDetailsPageProps> = async ({ params }) => {
             priority={true}
           />
         </div>
-        <PostDetailsLikeButton post={post} authenticatedUser={authenticatedUser!} />
+        <PostDetailsLikeButton post={post} authenticatedUser={authenticatedUser} />
         <div className='flex flex-col w-full mt-5'>
           <div className='flex justify-between items-center mb-2'>
             <h4 className='text-gray-500 font-bold mb-2 text-xl'>Donation progress</h4>
@@ -146,7 +148,7 @@ const PostDetailsPage: FC<PostDetailsPageProps> = async ({ params }) => {
           <Progress
             current={
               post.donations?.reduce(
-                (previousValue, currentValue) => (previousValue += Number(currentValue.donation)),
+                (previousValue, currentValue) => (previousValue += Number(currentValue.amount)),
                 0,
               ) || 0
             }

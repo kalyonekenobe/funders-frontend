@@ -36,7 +36,7 @@ const Post: FC<PostProps> = async ({ post, ...props }) => {
               <div className='flex items-center'>
                 <div className='w-[35px] h-[35px] flex flex-1 aspect-square rounded relative me-3 overflow-hidden'>
                   <Image
-                    src={resolveImage(post.author?.avatar, 'default-profile-image')}
+                    src={resolveImage(post.author?.image, 'default-profile-image')}
                     alt={`${post.author?.firstName} ${post.author?.lastName}'s profile image`}
                     fill={true}
                     sizes='100%, 100%'
@@ -55,7 +55,7 @@ const Post: FC<PostProps> = async ({ post, ...props }) => {
             </Link>
             <PostOptionsButton
               post={post}
-              authenticatedUser={authenticatedUser!}
+              authenticatedUser={authenticatedUser}
               className='rounded-full hover:bg-slate-100 aspect-square p-1.5 transition-[0.3s_ease]'
             >
               <GearIcon className='size-5 stroke-[1.5px] text-gray-700' />
@@ -80,12 +80,12 @@ const Post: FC<PostProps> = async ({ post, ...props }) => {
             )}
           </h3>
           <div className='flex gap-2 mt-1 flex-wrap'>
-            {post.categories?.map(category => (
+            {post.categoriesToPosts?.map(categoryToPost => (
               <span
-                key={category.category}
+                key={categoryToPost.category}
                 className='bg-indigo-400 text-white font-medium text-xs px-2 py-0.5 rounded'
               >
-                {category.category}
+                {categoryToPost.category}
               </span>
             ))}
           </div>
@@ -94,7 +94,7 @@ const Post: FC<PostProps> = async ({ post, ...props }) => {
           <Progress
             current={
               post.donations?.reduce(
-                (previousValue, currentValue) => (previousValue += Number(currentValue.donation)),
+                (previousValue, currentValue) => (previousValue += Number(currentValue.amount)),
                 0,
               ) || 0
             }
@@ -104,7 +104,7 @@ const Post: FC<PostProps> = async ({ post, ...props }) => {
           />
         </div>
       </div>
-      <PostFooter post={post} authenticatedUser={authenticatedUser!} />
+      <PostFooter post={post} authenticatedUser={authenticatedUser} />
     </article>
   );
 };

@@ -25,7 +25,7 @@ const User: FC<UserProps> = async ({ user, ...props }) => {
         <header className='flex flex-col items-center w-full'>
           <div className='flex flex-1 w-full max-w-[128px] relative overflow-hidden rounded aspect-square'>
             <Image
-              src={resolveImage(user.avatar, 'default-profile-image')}
+              src={resolveImage(user.image, 'default-profile-image')}
               alt={`${user.firstName} ${user.lastName}'s profile image`}
               sizes='100%, 100%'
               className='object-cover'
@@ -38,19 +38,19 @@ const User: FC<UserProps> = async ({ user, ...props }) => {
           </h3>
           <span
             className={`text-xs font-semibold text-white px-2 rounded-full mt-0.5 ${
-              user.role === UserRoleEnum.Default
+              user.role === UserRoleEnum.User
                 ? 'bg-emerald-500'
                 : user.role === UserRoleEnum.Volunteer
                 ? 'bg-violet-500'
                 : 'bg-rose-500'
             }`}
           >
-            {user.role === UserRoleEnum.Default ? 'Member' : user.role}
+            {user.role === UserRoleEnum.User ? 'Member' : user.role}
           </span>
         </header>
         <UserFooter
           user={user}
-          authenticatedUser={authenticatedUser!}
+          authenticatedUser={authenticatedUser}
           className='flex flex-col gap-1.5 w-full'
         />
       </div>

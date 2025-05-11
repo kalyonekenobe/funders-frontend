@@ -2,7 +2,6 @@
 
 import axios from '@/app/(core)/utils/axios.utils';
 import { HttpStatusCode } from 'axios';
-import qs from 'qs';
 import { ValiError, flatten, parse } from 'valibot';
 import { revalidatePath } from 'next/cache';
 import { Post } from '@/app/(core)/store/types/post.types';
@@ -22,11 +21,11 @@ import {
   UpdatePostSchema,
 } from '@/app/(core)/validation/schemas/post/post.schema';
 import { ApplicationRoutes } from '@/app/(core)/utils/routes.utils';
+import { resolveUrl } from '@/app/(core)/utils/app.utils';
 
 export const getAllPosts = async (options?: unknown): Promise<Post[]> => {
   try {
-    const query = qs.stringify(options, { allowDots: true });
-    const response = await axios.get(`/posts${query ? `?${query}` : ''}`);
+    const response = await axios.get(resolveUrl(`/posts`, options));
 
     if (response.status === HttpStatusCode.Ok) {
       return response.data;
@@ -46,9 +45,9 @@ export const addPostReaction = async (
     const authenticatedUser = await getAuthInfo();
 
     if (authenticatedUser) {
-      const response = await axios.post(`/posts/${postId}/reactions`, {
-        userId: authenticatedUser.userId,
-        reactionType: reaction,
+      const response = await axios.post(`/post-comments/${postId}/reactions`, {
+        userId: authenticatedUser.id,
+        reaction,
       });
 
       if (response.status === HttpStatusCode.Created) {
@@ -70,7 +69,7 @@ export const removePostReaction = async (
     const authenticatedUser = await getAuthInfo();
 
     if (authenticatedUser) {
-      const response = await axios.delete(`/posts/${postId}/reactions/${authenticatedUser.userId}`);
+      const response = await axios.delete(`/posts/${postId}/reactions`);
 
       if (response.status === HttpStatusCode.Ok) {
         return { data: response.data };
@@ -92,9 +91,8 @@ export const addPostCommentReaction = async (
     const authenticatedUser = await getAuthInfo();
 
     if (authenticatedUser) {
-      const response = await axios.post(`/comments/${postCommentId}/reactions`, {
-        userId: authenticatedUser.userId,
-        reactionType: reaction,
+      const response = await axios.post(`/post-comments/${postCommentId}/reactions`, {
+        reaction,
       });
 
       if (response.status === HttpStatusCode.Created) {
@@ -116,9 +114,7 @@ export const removePostCommentReaction = async (
     const authenticatedUser = await getAuthInfo();
 
     if (authenticatedUser) {
-      const response = await axios.delete(
-        `/comments/${postCommentId}/reactions/${authenticatedUser.userId}`,
-      );
+      const response = await axios.delete(`/post-comments/${postCommentId}/reactions`);
 
       if (response.status === HttpStatusCode.Ok) {
         return { data: response.data };
@@ -153,7 +149,7 @@ export const removePostComment = async (
   postCommentId: string,
 ): Promise<{ error?: string; data: PostComment | null }> => {
   try {
-    const response = await axios.delete(`/comments/${postCommentId}`);
+    const response = await axios.delete(`/post-comments/${postCommentId}`);
 
     if (response.status === HttpStatusCode.Ok) {
       return { data: response.data };
@@ -168,12 +164,7 @@ export const removePostComment = async (
 
 export const getPost = async (id: string, options?: unknown): Promise<Post | null> => {
   try {
-    const query = qs.stringify(options, {
-      allowDots: true,
-      arrayFormat: 'comma',
-      commaRoundTrip: true,
-    } as any);
-    const response = await axios.get(`/posts/${id}/${query ? `?${query}` : ''}`);
+    const response = await axios.get(resolveUrl(`/posts/${id}`, options));
 
     if (response.status === HttpStatusCode.Ok) {
       return response.data;
@@ -187,11 +178,11 @@ export const getPost = async (id: string, options?: unknown): Promise<Post | nul
 
 export const donate = async (
   id: string,
-  donation: number,
-  paymentInfo: string,
+  amount: number,
+  details: string,
 ): Promise<{ error?: string; data: PostDonation | null }> => {
   try {
-    const response = await axios.post(`/posts/${id}/donations`, { donation, paymentInfo });
+    const response = await axios.post(`/posts/${id}/donations`, { amount, details });
 
     if (response.status === HttpStatusCode.Created) {
       return { data: response.data };
@@ -255,20 +246,16 @@ export const addPostComment = async (state: any, postId: string, formData: FormD
 
       formData.delete('comment');
       formData.set('content', comment.comment);
-      formData.set('authorId', authenticatedUser.userId);
+      formData.set('authorId', authenticatedUser.id);
 
-      const query = qs.stringify(
-        {
+      const response = await axios.post(
+        resolveUrl(`/posts/${postId}/comments`, {
           include: {
             author: true,
             attachments: true,
             parentComment: { include: { author: true } },
           },
-        },
-        { allowDots: true },
-      );
-      const response = await axios.post(
-        `/posts/${postId}/comments${query ? `?${query}` : ''}`,
+        }),
         formData,
         {
           headers: {
@@ -339,18 +326,14 @@ export const editPostComment = async (state: any, commentId: string, formData: F
       formData.delete('comment');
       formData.set('content', comment.comment);
 
-      const query = qs.stringify(
-        {
+      const response = await axios.put(
+        resolveUrl(`/post-comments/${commentId}`, {
           include: {
             author: true,
             attachments: true,
             parentComment: { include: { author: true } },
           },
-        },
-        { allowDots: true },
-      );
-      const response = await axios.put(
-        `/comments/${commentId}${query ? `?${query}` : ''}`,
+        }),
         formData,
         {
           headers: {
@@ -434,17 +417,7 @@ export const createPost = async (state: any, formData: FormData) => {
         };
       }
 
-      formData.set('authorId', authenticatedUser.userId);
-
-      if (formData.get('isDraft') === 'false') {
-        formData.delete('isDraft');
-      }
-
-      const response = await axios.post('/posts', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await axios.postForm('/posts', formData);
 
       if (response.status === HttpStatusCode.Created) {
         revalidatePath(ApplicationRoutes.Home);
@@ -452,7 +425,6 @@ export const createPost = async (state: any, formData: FormData) => {
       }
     }
   } catch (error: any) {
-    console.log(error);
     if (error instanceof ValiError) {
       return {
         ...state,
@@ -505,15 +477,7 @@ export const updatePost = async (state: any, postId: string, formData: FormData)
       };
     }
 
-    if (formData.get('isDraft') === 'false') {
-      formData.delete('isDraft');
-    }
-
-    const response = await axios.put(`/posts/${postId}`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    const response = await axios.putForm(`/posts/${postId}`, formData);
 
     if (response.status === HttpStatusCode.Ok) {
       revalidatePath(ApplicationRoutes.Home);

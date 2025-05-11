@@ -42,7 +42,7 @@ const SignUpForm: FC<SignUpFormProps> = () => {
   };
 
   const submit = async (formData: FormData) => {
-    formData.set('registrationMethod', UserRegistrationMethodEnum.Default);
+    formData.set('registrationMethod', UserRegistrationMethodEnum.Credentials);
     const response = await signUp(state, formData);
     setState(response);
 
@@ -82,7 +82,9 @@ const SignUpForm: FC<SignUpFormProps> = () => {
         errors: {
           ...state.errors,
           nested: Object.fromEntries(
-            Object.entries(state.errors.nested || {}).filter(([key, _]) => key !== 'wallet'),
+            Object.entries(state.errors.nested || {}).filter(
+              ([key, _]) => key !== 'walletPublicKey',
+            ),
           ),
         },
         isWalletConnecting: false,
@@ -330,12 +332,12 @@ const SignUpForm: FC<SignUpFormProps> = () => {
               <input
                 defaultValue={state.selectedWallet}
                 type='text'
-                name='wallet'
+                name='walletPublicKey'
                 readOnly
                 id='sign-up-wallet'
                 placeholder='EDFVK31PPpHM7nnv6NUSMTGko46v1u5j8TXnXje1CMPw'
                 className={`border p-3 rounded-lg flex-1 text-gray-700 read-only:text-gray-500 font-medium ${
-                  state.errors.nested?.wallet ? `border-red-500` : ``
+                  state.errors.nested?.walletPublicKey ? `border-red-500` : ``
                 }`}
               />
               <button
@@ -350,7 +352,7 @@ const SignUpForm: FC<SignUpFormProps> = () => {
                 Connect
               </button>
             </div>
-            {state.errors.nested?.wallet?.map((error: string, index: number) => (
+            {state.errors.nested?.walletPublicKey?.map((error: string, index: number) => (
               <span key={index} className='text-red-500 text-xs font-medium mt-1 text-justify'>
                 {error}
               </span>

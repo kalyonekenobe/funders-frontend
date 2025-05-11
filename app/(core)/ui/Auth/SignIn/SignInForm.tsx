@@ -4,7 +4,7 @@ import { FC, FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
   authWithSSOIfAuthTokenExist,
-  authWithWallet,
+  authWithSolanaWallet,
   getWalletAuthMessage,
   signIn,
 } from '@/app/(core)/actions/auth.actions';
@@ -91,7 +91,7 @@ const SignInForm: FC<SignInFormProps> = () => {
           const signature = bs58.encode(signMessageResponse);
           const accessToken = `${bs58encodedPublicKey}.${bs58encodedPayload}.${signature}`;
 
-          const response = await authWithWallet(accessToken);
+          const response = await authWithSolanaWallet(accessToken);
 
           if (response.status !== HttpStatusCode.Created) {
             setState({ ...state, isWalletConnecting: false });

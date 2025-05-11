@@ -97,14 +97,12 @@ const EditPostCommentButton: FC<EditPostCommentButtonProps> = ({
   useEffect(() => {
     Promise.all(
       (comment.attachments || []).map(attachment => {
-        return fetch(
-          resolveFilePath(attachment.file, attachment.resourceType as 'image' | 'video' | 'raw'),
-        )
+        return fetch(resolveFilePath(attachment.location))
           .then(response => response.blob())
           .then(blob => {
             return {
-              file: new File([blob], attachment.file),
-              name: attachment.filename || attachment.file,
+              file: new File([blob], attachment.location),
+              name: attachment.filename || attachment.location,
             };
           });
       }),

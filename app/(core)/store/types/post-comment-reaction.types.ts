@@ -8,8 +8,9 @@ import { User } from '@/app/(core)/store/types/user.types';
 export interface PostCommentReaction {
   commentId: string;
   userId: string;
-  reactionType: UserReactionTypeEnum;
-  datetime: Date;
+  reaction: UserReactionTypeEnum;
+  createdAt: Date;
+  updatedAt: Date;
   user?: User;
   comment?: PostComment;
   userReactionType?: UserReactionType;

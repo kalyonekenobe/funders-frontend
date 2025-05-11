@@ -1,4 +1,4 @@
-import { CategoriesOnPosts } from '@/app/(core)/store/types/categories-on-posts.types';
+import { CategoriesToPosts } from '@/app/(core)/store/types/categories-on-posts.types';
 import { PostAttachment } from '@/app/(core)/store/types/post-attachment.types';
 import { PostComment } from '@/app/(core)/store/types/post-comment.types';
 import { PostDonation } from '@/app/(core)/store/types/post-donation.types';
@@ -17,7 +17,7 @@ export interface Post {
   updatedAt: Date | null;
   removedAt: Date | null;
   author?: User;
-  categories?: CategoriesOnPosts[];
+  categoriesToPosts?: CategoriesToPosts[];
   attachments?: PostAttachment[];
   donations?: PostDonation[];
   reactions?: PostReaction[];

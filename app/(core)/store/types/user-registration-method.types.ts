@@ -1,11 +1,11 @@
-import { User } from "@/app/(core)/store/types/user.types";
-
+import { User } from '@/app/(core)/store/types/user.types';
 
 export enum UserRegistrationMethodEnum {
-  Default = 'Default',
+  Credentials = 'Credentials',
   Google = 'Google',
   Discord = 'Discord',
   Apple = 'Apple',
+  SolanaWallet = 'SolanaWallet',
 }
 
 export interface UserRegistrationMethod {

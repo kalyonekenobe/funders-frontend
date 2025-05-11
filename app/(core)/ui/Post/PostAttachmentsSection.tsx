@@ -32,12 +32,7 @@ const PostAttachmentsSection: FC<PostAttachmentsSectionProps> = ({ attachments, 
           {state.attachments.map(attachment => (
             <span
               onClick={() => {
-                fetch(
-                  resolveFilePath(
-                    attachment.file,
-                    attachment.resourceType as 'image' | 'video' | 'raw',
-                  ),
-                )
+                fetch(resolveFilePath(attachment.location))
                   .then(response => response.blob())
                   .then(blob => {
                     const url = window.URL.createObjectURL(new Blob([blob]));
@@ -45,9 +40,9 @@ const PostAttachmentsSection: FC<PostAttachmentsSectionProps> = ({ attachments, 
                     link.href = url;
                     link.setAttribute(
                       'download',
-                      `${attachment.filename || attachment.file}${
-                        getFileExtension(attachment.file)
-                          ? `.${getFileExtension(attachment.file)}`
+                      `${attachment.filename || attachment.location}${
+                        getFileExtension(attachment.location)
+                          ? `.${getFileExtension(attachment.location)}`
                           : ''
                       }`,
                     );
@@ -60,7 +55,7 @@ const PostAttachmentsSection: FC<PostAttachmentsSectionProps> = ({ attachments, 
               className='inline-flex text-center items-center justify-center border bg-slate-100 hover:bg-slate-200 px-2 py-0.5 rounded cursor-pointer transition-[0.3s_ease] text-slate-600 font-medium'
             >
               <FileIcon className='size-3 stroke-2 me-1' />
-              {attachment.filename || attachment.file}
+              {attachment.filename || attachment.location}
             </span>
           ))}
         </div>

@@ -1,9 +1,9 @@
-import { minLength, pipe, strictObject, string, trim } from 'valibot';
+import { minLength, object, pipe, string, trim } from 'valibot';
 
-export const CreatePostCommentSchema = strictObject({
+export const CreatePostCommentSchema = object({
   comment: pipe(string('Comment cannot be empty'), trim(), minLength(1, 'Comment cannot be empty')),
 });
 
-export const UpdatePostCommentSchema = strictObject({
+export const UpdatePostCommentSchema = object({
   comment: pipe(string('Comment cannot be empty'), trim(), minLength(1, 'Comment cannot be empty')),
 });

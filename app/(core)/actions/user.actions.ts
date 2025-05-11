@@ -1,7 +1,6 @@
 'use server';
 
 import axios from '@/app/(core)/utils/axios.utils';
-import qs from 'qs';
 import { HttpStatusCode } from 'axios';
 import { ValiError, flatten, parse } from 'valibot';
 import { cookies } from 'next/headers';
@@ -9,6 +8,7 @@ import { User } from '@/app/(core)/store/types/user.types';
 import { Following } from '@/app/(core)/store/types/following.types';
 import { getAuthInfo, setCookies } from '@/app/(core)/actions/auth.actions';
 import { UserUpdateSchema } from '@/app/(core)/validation/schemas/user/user.schema';
+import { resolveUrl } from '@/app/(core)/utils/app.utils';
 
 export const getUserFriendsAndSuggestions = async (userId: string, limit: number = 10) => {
   let result = {
@@ -20,8 +20,8 @@ export const getUserFriendsAndSuggestions = async (userId: string, limit: number
     const followingsResponse = await axios.get(`/users/${userId}/followings`);
 
     if (followingsResponse.status === HttpStatusCode.Ok) {
-      const query = qs.stringify(
-        {
+      const friendsResponse = await axios.get(
+        resolveUrl(`/users/${userId}/followers`, {
           where: {
             followerId: {
               in: followingsResponse.data.map((following: User) => following.id),
@@ -29,29 +29,21 @@ export const getUserFriendsAndSuggestions = async (userId: string, limit: number
           },
           select: { userId: true },
           take: limit,
-        },
-        { arrayFormat: 'comma', allowDots: true, commaRoundTrip: true } as any,
-      );
-      const friendsResponse = await axios.get(
-        `/users/${userId}/followers${query ? `?${query}` : ''}`,
+        }),
       );
 
       if (friendsResponse.status === HttpStatusCode.Ok) {
         result.friends = friendsResponse.data;
-        const suggestionsQuery = qs.stringify(
-          {
+
+        const suggestionsRepsponse = await axios.get(
+          resolveUrl(`/users`, {
             where: {
               id: {
                 notIn: [...followingsResponse.data.map((following: User) => following.id), userId],
               },
             },
             take: limit,
-          },
-          { arrayFormat: 'comma', allowDots: true, commaRoundTrip: true } as any,
-        );
-
-        const suggestionsRepsponse = await axios.get(
-          `/users${suggestionsQuery ? `?${suggestionsQuery}` : ''}`,
+          }),
         );
 
         if (suggestionsRepsponse.status === HttpStatusCode.Ok) {
@@ -68,12 +60,7 @@ export const getUserFriendsAndSuggestions = async (userId: string, limit: number
 
 export const getAllUsers = async (options?: unknown): Promise<User[]> => {
   try {
-    const query = qs.stringify(options, {
-      arrayFormat: 'comma',
-      allowDots: true,
-      commaRoundTrip: true,
-    } as any);
-    const response = await axios.get(`/users${query ? `?${query}` : ''}`);
+    const response = await axios.get(resolveUrl(`/users`, options));
 
     if (response.status === HttpStatusCode.Ok) {
       return response.data;
@@ -87,8 +74,7 @@ export const getAllUsers = async (options?: unknown): Promise<User[]> => {
 
 export const getUser = async (id: string, options?: unknown): Promise<User | null> => {
   try {
-    const query = qs.stringify(options);
-    const response = await axios.get(`/users/${id}/${query ? `?${query}` : ''}`);
+    const response = await axios.get(resolveUrl(`/users/${id}`, options));
 
     if (response.status === HttpStatusCode.Ok) {
       return response.data;
@@ -107,7 +93,7 @@ export const followUser = async (
     const authenticatedUser = await getAuthInfo();
 
     if (authenticatedUser) {
-      const response = await axios.post(`/users/${id}/followers/${authenticatedUser.userId}`, {});
+      const response = await axios.post(`/users/${id}/followers/${authenticatedUser.id}`, {});
 
       if (response.status === HttpStatusCode.Created) {
         return { data: response.data };
@@ -128,7 +114,7 @@ export const unfollowUser = async (
     const authenticatedUser = await getAuthInfo();
 
     if (authenticatedUser) {
-      const response = await axios.delete(`/users/${id}/followers/${authenticatedUser.userId}`);
+      const response = await axios.delete(`/users/${id}/followers/${authenticatedUser.id}`);
 
       if (response.status === HttpStatusCode.Ok) {
         return { data: response.data };
@@ -142,8 +128,8 @@ export const unfollowUser = async (
   return { error: 'Cannot unfollow this user', data: null };
 };
 
-export const udpateUser = async (state: any, formData: FormData) => {
-  let { id, confirmPassword, avatar, ...data } = Object.fromEntries(formData) as any;
+export const updateUser = async (state: any, formData: FormData) => {
+  let { id, confirmPassword, image, ...data } = Object.fromEntries(formData) as any;
   const cookieStore = await cookies();
 
   try {
@@ -169,8 +155,8 @@ export const udpateUser = async (state: any, formData: FormData) => {
     if (user.phone === null) user.phone = '';
     if (user.bio === null) user.bio = '';
 
-    if (avatar !== undefined) {
-      user.avatar = avatar === '' ? null : avatar;
+    if (image !== undefined) {
+      user.image = image === '' ? null : image;
     }
 
     const userFormData = new FormData();
@@ -178,29 +164,13 @@ export const udpateUser = async (state: any, formData: FormData) => {
       userFormData.set(key, !value ? '' : (value as string | Blob));
     });
 
-    const response = await axios.put(`/users/${id}`, userFormData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-
-    const refreshResponse = await axios.post(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/refresh`,
-      {},
-      {
-        withCredentials: true,
-        headers: {
-          Cookie: cookieStore.toString(),
-        },
-      },
-    );
-
-    setCookies(refreshResponse.headers['set-cookie'] || []);
+    const response = await axios.putForm(`/users/${id}`, userFormData);
 
     if (response.status === HttpStatusCode.Ok) {
       return { ...state, errors: {} };
     }
   } catch (error: any) {
+    console.log(error);
     if (error instanceof ValiError) {
       if (confirmPassword !== data.password) {
         error = {

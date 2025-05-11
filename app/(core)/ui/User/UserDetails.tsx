@@ -43,7 +43,7 @@ const UserDetails: FC<UserDetailsProps> = async ({ user, ...props }) => {
             <div className='flex justify-between w-full lg:max-w-[128px] lg:justify-normal items-start mb-5'>
               <div className='relative flex aspect-square rounded overflow-hidden w-full max-w-[128px] lg:m-0 self-start'>
                 <Image
-                  src={resolveImage(user.avatar, 'default-profile-image')}
+                  src={resolveImage(user.image, 'default-profile-image')}
                   alt={`${user.firstName} ${user.lastName}'s profile image`}
                   sizes='100%, 100%'
                   fill={true}
@@ -61,17 +61,17 @@ const UserDetails: FC<UserDetailsProps> = async ({ user, ...props }) => {
               </h3>
               <span
                 className={`text-xs font-semibold text-white px-2 rounded-full mt-0.5 ${
-                  user.role === UserRoleEnum.Default
+                  user.role === UserRoleEnum.User
                     ? 'bg-emerald-500'
                     : user.role === UserRoleEnum.Volunteer
                     ? 'bg-violet-500'
                     : 'bg-rose-500'
                 }`}
               >
-                {user.role === UserRoleEnum.Default ? 'Member' : user.role}
+                {user.role === UserRoleEnum.User ? 'Member' : user.role}
               </span>
               <span className='text-xs text-gray-800 mt-1.5'>
-                Registered at: <span>{intl.format(new Date(user.registeredAt))}</span>
+                Registered at: <span>{intl.format(new Date(user.createdAt))}</span>
               </span>
               <p className='my-5 text-gray-500 text-sm whitespace-pre-wrap'>
                 {user.bio || 'No bio yet'}

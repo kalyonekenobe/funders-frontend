@@ -1,8 +1,15 @@
 import { RequestCookies, ResponseCookies } from 'next/dist/compiled/@edge-runtime/cookies';
 import { NextRequest, NextResponse } from 'next/server';
+import qs from 'qs';
 
-export const capitalize = (string: string): string => {
-  return string.length ? `${string[0].toUpperCase()}${string.slice(1)}` : string;
+export const resolveUrl = (url: string, queryParams?: any) => {
+  const queryString = qs.stringify(queryParams, {
+    allowDots: true,
+    parseArrays: true,
+    comma: true,
+  } as any);
+
+  return `${url}${queryString ? `?${queryString}` : ``}`;
 };
 
 export const applySetRequestCookies = (request: NextRequest, res: NextResponse): void => {
@@ -18,7 +25,7 @@ export const applySetRequestCookies = (request: NextRequest, res: NextResponse):
 };
 
 export const resolveImage = (
-  source?: string | null,
+  path?: string | null,
   placeholder:
     | 'default-image-placeholder'
     | 'default-profile-image'
@@ -26,8 +33,8 @@ export const resolveImage = (
     | 'profile-background-placeholder'
     | 'profile-image-placeholder' = 'default-image-placeholder',
 ) => {
-  if (source) {
-    return `${process.env.NEXT_PUBLIC_CLOUDINARY_PREFIX}${source}.${getFileExtension(source)}`;
+  if (path) {
+    return `https://aljshowzwfryjtexdczf.supabase.co/storage/v1/object/public/Funders/${path}`;
   }
 
   switch (placeholder) {
@@ -51,14 +58,12 @@ export const resolveImage = (
   }
 };
 
+export const resolveFilePath = (path: string) => {
+  return `https://aljshowzwfryjtexdczf.supabase.co/storage/v1/object/public/Funders/${path}`;
+};
+
 export const getFileExtension = (source: string): unknown =>
   /[.]/.exec(source) ? /[^.]+$/.exec(source) : '';
-
-export const resolveFilePath = (source: string, resourseType: 'image' | 'video' | 'raw') => {
-  return `${process.env.NEXT_PUBLIC_CLOUDINARY_PREFIX}/${resourseType}/upload/${source}${
-    resourseType !== 'raw' ? `.${getFileExtension(source)}` : ''
-  }`;
-};
 
 export const fileWithExtension = (filename: string): string => {
   return `${filename}.${getFileExtension(filename) || ''}`;

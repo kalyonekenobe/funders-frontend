@@ -8,14 +8,14 @@ export interface UserListItemProps extends HTMLAttributes<HTMLDivElement> {
   id: string;
   firstName: string;
   lastName: string;
-  avatar: string | null;
+  image: string | null;
 }
 
 const UserListItem: FC<UserListItemProps> = ({
   id,
   firstName,
   lastName,
-  avatar,
+  image,
   className,
   ...props
 }) => {
@@ -23,7 +23,7 @@ const UserListItem: FC<UserListItemProps> = ({
     <Link href={ApplicationRoutes.UserDetails.replace(':id', id)} className={`flex ${className}`}>
       <div className='relative flex flex-1 overflow-hidden rounded max-w-[32px] aspect-square'>
         <Image
-          src={resolveImage(avatar, 'default-profile-image')}
+          src={resolveImage(image, 'default-profile-image')}
           alt={`${firstName} ${lastName}'s profile image`}
           sizes='100%, 100%'
           fill={true}

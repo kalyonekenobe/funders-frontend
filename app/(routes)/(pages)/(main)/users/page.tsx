@@ -14,8 +14,8 @@ const fetchData = async () => {
 
   if (authenticatedUser) {
     const users = await getAllUsers({
-      where: { id: { notIn: [authenticatedUser.userId] } },
-      select: {
+      where: { id: { notIn: [authenticatedUser.id] } },
+      include: {
         followers: { include: { follower: true } },
         followings: { include: { user: true } },
         posts: true,

@@ -13,7 +13,7 @@ const fetchData = async () => {
   const authenticatedUser = await getAuthInfo();
 
   const friendsAndSuggestions = authenticatedUser
-    ? await getUserFriendsAndSuggestions(authenticatedUser.userId, 5)
+    ? await getUserFriendsAndSuggestions(authenticatedUser.id, 5)
     : { friends: [], suggestions: [] };
 
   return { authenticatedUser, friendsAndSuggestions };
@@ -35,7 +35,7 @@ const FriendsAndSuggestions: FC<FriendsAndSuggestionsProps> = async ({ ...props 
             >
               <div className='flex flex-1 max-w-[35px] me-2 w-full h-full aspect-square overflow-hidden rounded relative'>
                 <Image
-                  src={resolveImage(friend.avatar, 'default-profile-image')}
+                  src={resolveImage(friend.image, 'default-profile-image')}
                   alt={`${friend.firstName} ${friend.lastName}'s profile image`}
                   sizes='100%, 100%'
                   fill={true}
@@ -65,7 +65,7 @@ const FriendsAndSuggestions: FC<FriendsAndSuggestionsProps> = async ({ ...props 
             >
               <div className='flex flex-1 max-w-[35px] me-2 w-full h-full aspect-square overflow-hidden rounded relative'>
                 <Image
-                  src={resolveImage(suggestion.avatar, 'default-profile-image')}
+                  src={resolveImage(suggestion.image, 'default-profile-image')}
                   alt={`${suggestion.firstName} ${suggestion.lastName}'s profile image`}
                   sizes='100%, 100%'
                   fill={true}

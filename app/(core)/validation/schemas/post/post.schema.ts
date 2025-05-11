@@ -3,14 +3,14 @@ import {
   minLength,
   minValue,
   number,
+  object,
   optional,
   pipe,
-  strictObject,
   string,
   trim,
 } from 'valibot';
 
-export const CreatePostSchema = strictObject({
+export const CreatePostSchema = object({
   title: pipe(string('Title cannot be empty'), trim(), minLength(1, 'Title cannot be empty')),
   content: pipe(string('Content cannot be empty'), trim(), minLength(1, 'Content cannot be empty')),
   fundsToBeRaised: pipe(
@@ -20,7 +20,7 @@ export const CreatePostSchema = strictObject({
   isDraft: optional(pipe(boolean())),
 });
 
-export const UpdatePostSchema = strictObject({
+export const UpdatePostSchema = object({
   title: optional(
     pipe(string('Title cannot be empty'), trim(), minLength(1, 'Title cannot be empty')),
   ),

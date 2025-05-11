@@ -18,8 +18,8 @@ const fetchData = async () => {
   const authenticatedUser = await getAuthInfo();
 
   if (authenticatedUser) {
-    const user = await getUser(authenticatedUser.userId, {
-      select: {
+    const user = await getUser(authenticatedUser.id, {
+      include: {
         posts: true,
         followers: { include: { follower: true } },
         followings: { include: { user: true } },

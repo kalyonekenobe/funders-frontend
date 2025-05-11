@@ -14,17 +14,19 @@ import { UserRegistrationMethodEnum } from '@/app/(core)/store/types/user-regist
 import { UserRoleEnum } from '@/app/(core)/store/types/user-role.types';
 import { AuthProviders } from '@/app/(core)/utils/auth.utils';
 import { ApplicationRoutes } from '@/app/(core)/utils/routes.utils';
-import { applySetRequestCookies, capitalize } from '@/app/(core)/utils/app.utils';
+import { applySetRequestCookies, resolveUrl } from '@/app/(core)/utils/app.utils';
 import { parseCookieString } from '@/app/(core)/utils/cookies.utils';
 import crypto from 'crypto';
 import { v4 as uuid } from 'uuid';
+import _ from 'lodash';
+import { User } from '@/app/(core)/store/types/user.types';
 
 export const signIn = async (state: any, formData: FormData) => {
   try {
     const { email, password } = Object.fromEntries(formData);
     const credentials = await parse(LoginSchema, { email, password });
 
-    const response = await axios.post('/auth/login', credentials);
+    const response = await axios.post('/auth/login/credentials', credentials);
 
     if (response.status === HttpStatusCode.Created) {
       return { ...state, errors: {} };
@@ -69,13 +71,13 @@ export const signUp = async (state: any, formData: FormData) => {
     data.birthDate = new Date(data.birthDate);
     const user = await parse(RegisterSchema, data);
 
-    if (registrationMethod && registrationMethod !== UserRegistrationMethodEnum.Default) {
+    if (registrationMethod && registrationMethod !== UserRegistrationMethodEnum.Credentials) {
       delete data.password;
     }
 
     if (
       confirmPassword !== data.password &&
-      registrationMethod === UserRegistrationMethodEnum.Default
+      registrationMethod === UserRegistrationMethodEnum.Credentials
     ) {
       throw new ValiError([
         {
@@ -89,11 +91,24 @@ export const signUp = async (state: any, formData: FormData) => {
       ]);
     }
 
-    const response = await axios.post('/auth/register', {
-      ...user,
-      registrationMethod,
-      role: UserRoleEnum.Default,
-    });
+    let registrationUrl = '';
+
+    switch (registrationMethod) {
+      case UserRegistrationMethodEnum.Credentials:
+        registrationUrl = '/auth/register/credentials';
+        break;
+      case UserRegistrationMethodEnum.Google:
+        registrationUrl = '/auth/register/google';
+        break;
+      case UserRegistrationMethodEnum.Discord:
+        registrationUrl = '/auth/register/discord';
+        break;
+      case UserRegistrationMethodEnum.SolanaWallet:
+        registrationUrl = '/auth/register/wallet/solana';
+        break;
+    }
+
+    const response = await axios.post(registrationUrl, user);
 
     if (response.status === HttpStatusCode.Created) {
       return { ...state, errors: {} };
@@ -202,7 +217,7 @@ export const authWithSSOIfAuthTokenExist = async (): Promise<{
   const { email, provider, accessToken, referer } = payload;
 
   try {
-    const response = await axios.get(`/users?where[email]=${email}`);
+    const response = await axios.get(resolveUrl(`/users`, { where: { email } }));
 
     if (response.status !== HttpStatusCode.Ok) {
       throw new Error('Internal server error');
@@ -291,7 +306,7 @@ export const getWalletAuthMessage = async (address: string): Promise<string> => 
     .replace(':resources', resources);
 };
 
-export const authWithWallet = async (
+export const authWithSolanaWallet = async (
   accessToken: string,
 ): Promise<{
   notify: boolean;
@@ -299,11 +314,7 @@ export const authWithWallet = async (
   status: HttpStatusCode;
 }> => {
   try {
-    await axios.post(`/auth/login/wallet`, undefined, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+    await axios.post(`/auth/login/wallet/solana`, { solanaWalletAccessToken: accessToken });
   } catch (error: any) {
     return { notify: true, data: { error: error.toString() }, status: HttpStatusCode.Unauthorized };
   }
@@ -322,7 +333,7 @@ export const extractAccountCompletionMetadata = async (): Promise<{
 }> => {
   const cookieStore = await cookies();
   const accountCompletionToken = cookieStore.get(
-    'process.env.NEXT_COOKIE_ACCOUNT_COMPLETION_TOKEN_NAME',
+    process.env.NEXT_COOKIE_ACCOUNT_COMPLETION_TOKEN_NAME || '',
   );
 
   if (!accountCompletionToken) {
@@ -342,7 +353,7 @@ export const extractAccountCompletionMetadata = async (): Promise<{
     new TextEncoder().encode(process.env.NEXT_JWT_SECRET!),
   );
 
-  cookieStore.delete('process.env.NEXT_COOKIE_ACCOUNT_COMPLETION_TOKEN_NAME');
+  cookieStore.delete(process.env.NEXT_COOKIE_ACCOUNT_COMPLETION_TOKEN_NAME || '');
 
   if (!accountCompletionTokenIsValid || !payload) {
     return {
@@ -361,7 +372,7 @@ export const extractAccountCompletionMetadata = async (): Promise<{
     return {
       notify: true,
       data: {
-        error: `An error occurred when receiving data from ${capitalize(
+        error: `An error occurred when receiving data from ${_.capitalize(
           provider || 'auth provider',
         )}`,
         redirectUrl: referer,
@@ -377,19 +388,10 @@ export const extractAccountCompletionMetadata = async (): Promise<{
   };
 };
 
-export const getAuthInfo = async (): Promise<AuthInfo | null> => {
-  const cookieStore = await cookies();
-  const payload = (await jose.decodeJwt(
-    cookieStore.get(process.env.NEXT_COOKIE_ACCESS_TOKEN_NAME || 'Funders-Access-Token')?.value ||
-      '',
-  )) as { [key: string]: any };
+export const getAuthInfo = async (): Promise<User> => {
+  const response = await axios.get('/auth/user');
 
-  if (payload && !(typeof payload === 'string')) {
-    const { userId, firstName, lastName, permissions, avatar } = payload;
-    return { userId, firstName, lastName, permissions, avatar };
-  }
-
-  return null;
+  return response.data;
 };
 
 export const signOut = async () => {

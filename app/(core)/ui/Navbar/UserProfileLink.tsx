@@ -25,7 +25,7 @@ const UserProfileLink: FC = async () => {
       >
         <span className='relative max-h-[28px] h-full aspect-square rounded bg-slate-100 min-[425px]:me-3 overflow-hidden'>
           <Image
-            src={resolveImage(authenticatedUser.avatar, 'default-profile-image')}
+            src={resolveImage(authenticatedUser.image, 'default-profile-image')}
             alt={`${authenticatedUser.firstName} ${authenticatedUser.lastName}'s profile image`}
             fill={true}
             sizes='100%, 100%'

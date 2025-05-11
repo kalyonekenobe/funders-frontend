@@ -12,7 +12,7 @@ import PostCommentComponent from '@/app/(core)/ui/Post/PostComment';
 export interface PostCommentsSectionProps extends HTMLAttributes<HTMLDivElement> {
   comments: PostComment[];
   post: Post;
-  authenticatedUser: AuthInfo;
+  authenticatedUser: User;
 }
 
 export interface PostCommentsSectionState {

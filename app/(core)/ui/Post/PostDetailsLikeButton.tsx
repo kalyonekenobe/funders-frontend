@@ -15,7 +15,7 @@ import { createPortal } from 'react-dom';
 
 export interface PostDetailsLikeButtonProps extends HTMLAttributes<HTMLDivElement> {
   post: Post;
-  authenticatedUser: AuthInfo;
+  authenticatedUser: User;
 }
 
 export interface PostDetailsLikeButtonState {
@@ -39,7 +39,7 @@ const PostDetailsLikeButton: FC<PostDetailsLikeButtonProps> = ({
     ...initialState,
     usersThatLikedPost: (post.reactions || []).map(reaction => reaction.user!),
     isLiked: Boolean(
-      (post.reactions || []).find(reaction => reaction.userId === authenticatedUser?.userId),
+      (post.reactions || []).find(reaction => reaction.userId === authenticatedUser?.id),
     ),
   });
   const { createNotification } = useNotification();
@@ -58,7 +58,7 @@ const PostDetailsLikeButton: FC<PostDetailsLikeButtonProps> = ({
           ...state,
           isLiked: true,
           usersThatLikedPost: [
-            { ...authenticatedUser, id: authenticatedUser.userId } as any,
+            { ...authenticatedUser, id: authenticatedUser.id } as any,
             ...state.usersThatLikedPost,
           ],
         });
@@ -76,7 +76,7 @@ const PostDetailsLikeButton: FC<PostDetailsLikeButtonProps> = ({
           ...state,
           isLiked: false,
           usersThatLikedPost: state.usersThatLikedPost.filter(
-            user => user.id !== authenticatedUser.userId,
+            user => user.id !== authenticatedUser.id,
           ),
         });
       }
@@ -105,7 +105,7 @@ const PostDetailsLikeButton: FC<PostDetailsLikeButtonProps> = ({
                   id={user.id}
                   firstName={user.firstName || ''}
                   lastName={user.lastName || ''}
-                  avatar={user.avatar || null}
+                  image={user.image || null}
                   className='inline-flex items-center rounded p-1 hover:bg-slate-100 transition-[0.3s_ease]'
                 />
               ))}
