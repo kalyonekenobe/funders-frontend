@@ -10,6 +10,7 @@ import {
   strictObject,
   string,
   trim,
+  optional,
 } from 'valibot';
 
 export const LoginSchema = strictObject({
@@ -70,9 +71,11 @@ export const RegisterSchema = strictObject({
       'The user must be at least 14 years old.',
     ), // Min user age can be 14 years
   ),
-  walletPublicKey: pipe(
-    string('Please choose a valid solana wallet address'),
-    trim(),
-    minLength(1, 'Please choose a valid solana wallet address'),
+  walletPublicKey: optional(
+    pipe(
+      string('Please choose a valid solana wallet address'),
+      trim(),
+      minLength(1, 'Please choose a valid solana wallet address'),
+    ),
   ),
 });

@@ -7,17 +7,12 @@ import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import * as jose from 'jose';
 import { NextRequest, NextResponse } from 'next/server';
-import { SolanaSignInInput } from '@solana/wallet-standard-features';
-import { AuthInfo } from '@/app/(core)/store/types/app.types';
 import { LoginSchema, RegisterSchema } from '@/app/(core)/validation/schemas/auth/auth.schema';
 import { UserRegistrationMethodEnum } from '@/app/(core)/store/types/user-registration-method.types';
-import { UserRoleEnum } from '@/app/(core)/store/types/user-role.types';
 import { AuthProviders } from '@/app/(core)/utils/auth.utils';
 import { ApplicationRoutes } from '@/app/(core)/utils/routes.utils';
 import { applySetRequestCookies, resolveUrl } from '@/app/(core)/utils/app.utils';
 import { parseCookieString } from '@/app/(core)/utils/cookies.utils';
-import crypto from 'crypto';
-import { v4 as uuid } from 'uuid';
 import _ from 'lodash';
 import { User } from '@/app/(core)/store/types/user.types';
 
@@ -59,13 +54,16 @@ export const signIn = async (state: any, formData: FormData) => {
 };
 
 export const signUp = async (state: any, formData: FormData) => {
-  const { ACTION_ID, registrationMethod, confirmPassword, ...data } = Object.fromEntries(
-    formData,
-  ) as any;
+  const { ACTION_ID, registrationMethod, confirmPassword, walletPublicKey, ...data } =
+    Object.fromEntries(formData) as any;
 
   try {
     if (!data.password) {
       data.password = '#xxxxxx0';
+    }
+
+    if (walletPublicKey) {
+      data.walletPublicKey = walletPublicKey;
     }
 
     data.birthDate = new Date(data.birthDate);
@@ -263,47 +261,9 @@ export const authWithSSOIfAuthTokenExist = async (): Promise<{
 };
 
 export const getWalletAuthMessage = async (address: string): Promise<string> => {
-  const now = new Date();
-  const uri = process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost';
-  const currentUrl = new URL(uri);
-  const domain = currentUrl.host;
-  const currentDateTime = now.toISOString();
-  const expiresAtDateTime = new Date(now.setMinutes(now.getMinutes() + 10)).toISOString();
-  const notBeforeDateTime = currentDateTime;
-  const nonce = crypto.randomBytes(16).toString('base64');
-  const requestId = uuid();
+  const response = await axios.get(`/auth/login/wallet/solana/message?address=${address}`);
 
-  const data: SolanaSignInInput = {
-    statement: `Clicking Sign or Approve only means you have proved this wallet is owned by you. This request will not trigger any blockchain transaction or cost any gas fee.`,
-    version: '1',
-    chainId: 'mainnet',
-    issuedAt: currentDateTime,
-    expirationTime: expiresAtDateTime,
-    notBefore: notBeforeDateTime,
-    resources: [uri, 'https://phantom.app/'],
-    domain,
-    nonce,
-    requestId,
-  };
-
-  const resources =
-    data.resources?.reduce((previous, current) => `${previous}- ${current}\n`, '') || '';
-
-  const template = process.env.NEXT_AUTH_MESSAGE_TEMPLATE || '';
-
-  return template
-    .replace(':domain', data.domain || 'localhost')
-    .replace(':address', address)
-    .replace(':statement', data.statement || '')
-    .replace(':uri', data.uri || '')
-    .replace(':version', data.version || '')
-    .replace(':chainId', data.chainId || '')
-    .replace(':nonce', data.nonce || '')
-    .replace(':issuedAt', data.issuedAt || '')
-    .replace(':expirationTime', data.expirationTime || '')
-    .replace(':notBefore', data.notBefore || '')
-    .replace(':requestId', data.requestId || '')
-    .replace(':resources', resources);
+  return response.data.message;
 };
 
 export const authWithSolanaWallet = async (
