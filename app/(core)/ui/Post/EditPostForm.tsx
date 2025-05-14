@@ -56,12 +56,12 @@ const EditPostForm: FC<EditPostFormProps> = ({ post, categories, ...props }) => 
     formData.append('content', state.data.content || '');
     formData.append('fundsToBeRaised', state.data.fundsToBeRaised?.toString() || '0');
     formData.append('isDraft', state.data.isDraft ? 'true' : 'false');
-    state.data.attachments.forEach((attachment, index) => {
+    state.data.attachments?.forEach((attachment, index) => {
       formData.append(`attachments`, attachment.file);
       formData.append(`attachments[${index}][filename]`, attachment.name);
     });
 
-    state.data.categories.forEach((category, index) => {
+    state.data.categories?.forEach((category, index) => {
       formData.append(`categories[${index}][category]`, category.name);
     });
 

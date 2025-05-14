@@ -55,7 +55,7 @@ const EditPostCommentButton: FC<EditPostCommentButtonProps> = ({
     const formData = new FormData();
     formData.set('comment', state.data.comment);
 
-    state.data.attachments.forEach((attachment, index) => {
+    state.data.attachments?.forEach((attachment, index) => {
       formData.append(`attachments`, attachment.file);
       formData.append(`attachments[${index}][filename]`, attachment.name);
     });

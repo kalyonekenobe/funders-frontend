@@ -59,7 +59,7 @@ const AddPostCommentButton: FC<AddPostCommentButtonProps> = ({
       formData.set('parentCommentId', replyTo.id);
     }
 
-    state.data.attachments.forEach((attachment, index) => {
+    state.data.attachments?.forEach((attachment, index) => {
       formData.append(`attachments`, attachment.file);
       formData.append(`attachments[${index}][filename]`, attachment.name);
     });
