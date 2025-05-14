@@ -22,6 +22,10 @@
     "stop:docker:production": "docker compose --env-file=./env/.env.production -f docker-compose.production.yml down"
   },
   "dependencies": {
+    "@jup-ag/api": "^6.0.41",
+    "@metaplex-foundation/mpl-token-metadata": "^3.4.0",
+    "@metaplex-foundation/umi": "^1.2.0",
+    "@metaplex-foundation/umi-bundle-defaults": "^1.2.0",
     "@next/env": "^15.1.3",
     "@solana/spl-token": "^0.4.9",
     "@solana/wallet-adapter-base": "^0.9.26",
@@ -41,6 +45,7 @@
     "jose": "^5.9.6",
     "jotai": "^2.11.0",
     "lodash": "^4.17.21",
+    "lucide-react": "^0.510.0",
     "nanoid": "^5.0.9",
     "next": "15.1.3",
     "qs": "^6.13.1",

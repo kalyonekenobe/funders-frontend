@@ -14,7 +14,7 @@ const Navbar: FC<NavbarProps> = ({ ...props }) => {
         <div className='flex flex-1'>
           <Link
             href={ApplicationRoutes.Home}
-            className='flex items-center px-5 py-1.5 md:px-10 w-full text-rose-600 hover:bg-slate-50 transition-[0.3s_ease] relative justify-center'
+            className='flex items-center px-5 py-1.5 md:px-10 w-full text-rose-600 hover:bg-slate-50 transition-[0.3s_ease] relative justify-start'
           >
             <div className='flex relative h-[60px] min-w-[100px] justify-center items-center'>
               <BanknotesIcon className='size-6 stroke-2 me-3' />
