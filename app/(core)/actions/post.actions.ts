@@ -45,7 +45,7 @@ export const addPostReaction = async (
     const authenticatedUser = await getAuthInfo();
 
     if (authenticatedUser) {
-      const response = await axios.post(`/post-comments/${postId}/reactions`, {
+      const response = await axios.post(`/posts/${postId}/reactions`, {
         userId: authenticatedUser.id,
         reaction,
       });
