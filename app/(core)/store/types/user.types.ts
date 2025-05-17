@@ -5,6 +5,8 @@ import {
   UserRegistrationMethodEnum,
 } from '@/app/(core)/store/types/user-registration-method.types';
 import { UserRole, UserRoleEnum } from '@/app/(core)/store/types/user-role.types';
+import { ChatRole } from '@/app/(core)/types/chat/chat-role.types';
+import { Chat } from '@/app/(core)/types/chat/chat.types';
 
 export interface User {
   id: string;
@@ -32,6 +34,19 @@ export interface User {
   donations?: any[];
   comments?: any[];
   commentReactions?: any[];
+}
+
+export interface UserToChat {
+  userId: User['id'];
+  chatId: Chat['id'];
+  role: ChatRole['name'];
+  isArchived: boolean;
+  lastSeenMessageTimestamp: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+  user?: User;
+  chat?: Chat;
+  chatRole?: ChatRole;
 }
 
 export enum Permissions {

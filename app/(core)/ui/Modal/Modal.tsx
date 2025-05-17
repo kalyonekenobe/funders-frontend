@@ -13,9 +13,10 @@ export interface ModalProps extends HTMLAttributes<HTMLElement> {
     disabled?: boolean;
   }[];
   children?: ReactNode | ReactNode[];
+  onClose?: () => void;
 }
 
-const Modal: FC<ModalProps> = ({ children, title, buttons, className }) => {
+const Modal: FC<ModalProps> = ({ children, title, buttons, className, onClose }) => {
   const acceptButton = buttons?.find(button => button.type === 'accept');
   const closeButton = buttons?.find(button => button.type === 'close');
   const modalRef = useOutsideClick(() => closeButton?.action?.());

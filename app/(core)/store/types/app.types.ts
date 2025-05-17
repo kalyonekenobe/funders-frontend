@@ -10,3 +10,10 @@ export interface AuthInfo {
   permissions: number;
   image: string | null;
 }
+
+export interface ActionCreatorOptions {
+  queryParams?: unknown;
+  queryStringParams?: unknown;
+  onSuccess?: (...args: any[]) => void;
+  onError?: (...args: any[]) => void;
+}

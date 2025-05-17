@@ -62,9 +62,31 @@ export const resolveFilePath = (path: string) => {
   return `https://aljshowzwfryjtexdczf.supabase.co/storage/v1/object/public/Funders/${path}`;
 };
 
+export const resolveImageUrl = (url: string) => {
+  if (url.startsWith('https://') || url.startsWith('blob:')) {
+    return url;
+  }
+  return `https://aljshowzwfryjtexdczf.supabase.co/storage/v1/object/public/Funders/${url}`;
+};
+
 export const getFileExtension = (source: string): unknown =>
   /[.]/.exec(source) ? /[^.]+$/.exec(source) : '';
 
 export const fileWithExtension = (filename: string): string => {
   return `${filename}.${getFileExtension(filename) || ''}`;
+};
+
+export const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+export const sanitizeChatMessage = (text: string) => {
+  const decodedText = text
+    .replace(/<br>/g, '\n')
+    .replace(/<div>/g, '\n')
+    .replace(/<\/div>/g, '')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'");
+  return decodedText;
 };
