@@ -33,7 +33,8 @@ const fetchData = async (id: string) => {
 };
 
 export const generateMetadata = async ({ params }: UserDetailsPageProps): Promise<Metadata> => {
-  const { user } = await fetchData(params.id);
+  const { id } = await params;
+  const { user } = await fetchData(id);
 
   return {
     title: `${user?.firstName} ${user?.lastName} | Funders`,
@@ -42,7 +43,8 @@ export const generateMetadata = async ({ params }: UserDetailsPageProps): Promis
 };
 
 const UserDetailsPage: FC<UserDetailsPageProps> = async ({ params }) => {
-  const { user } = await fetchData(params.id);
+  const { id } = await params;
+  const { user } = await fetchData(id);
 
   if (!user) {
     notFound();

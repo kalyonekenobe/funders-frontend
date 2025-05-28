@@ -220,9 +220,9 @@ const UserDetailsProfileFooter: FC<UserDetailsProfileFooterProps> = ({
           ) : (
             <>
               <ToggleFollowButton
-                followClassName='inline-flex p-1 text-center justify-center items-center rounded bg-blue-500 text-white font-medium text-sm hover:ring-2 hover:ring-blue-500 hover:ring-inset hover:text-blue-500 hover:bg-transparent transition-[0.3s_ease]'
+                followClassName='inline-flex px-5 min-[425px]:px-10 py-1.5 text-center justify-center items-center rounded bg-blue-500 text-white font-medium text-sm hover:ring-2 hover:ring-blue-500 hover:ring-inset hover:text-blue-500 hover:bg-transparent transition-[0.3s_ease]'
                 userId={user.id}
-                unfollowClassName='inline-flex p-1 text-center justify-center items-center rounded bg-rose-500 text-white font-medium text-sm hover:ring-2 hover:ring-rose-500 hover:ring-inset hover:text-rose-500 hover:bg-transparent transition-[0.3s_ease]'
+                unfollowClassName='inline-flex px-5 min-[425px]:px-10 py-1.5 text-center justify-center items-center rounded bg-rose-500 text-white font-medium text-sm hover:ring-2 hover:ring-rose-500 hover:ring-inset hover:text-rose-500 hover:bg-transparent transition-[0.3s_ease]'
                 followContent={
                   <>
                     <FollowIcon className='size-4 stroke-2 me-1.5' />
@@ -261,13 +261,13 @@ const UserDetailsProfileFooter: FC<UserDetailsProfileFooterProps> = ({
                   })
                 }
               />
-              <Link
+              {/* <Link
                 href={''}
                 className='inline-flex bg-slate-100 ring-[1px] ring-inset ring-gray-300 text-slate-600 rounded px-5 min-[425px]:px-10 py-1.5 text-center justify-center items-center font-medium text-sm hover:bg-slate-200 hover:text-slate-700 transition-[0.3s_ease]'
               >
                 <MessageIcon className='size-4 stroke-2 me-1.5' />
                 Message
-              </Link>
+              </Link> */}
             </>
           )}
         </div>
