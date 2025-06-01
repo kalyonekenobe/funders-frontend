@@ -33,6 +33,7 @@ ENV NODE_ENV=production
 
 COPY --chown=node:node --from=build /app/package.json /app/pnpm-lock.yaml ./
 COPY --chown=node:node --from=build /app/node_modules ./node_modules
+COPY --chown=node:node --from=build /app/public ./public
 COPY --chown=node:node --from=build /app/.next ./.next
 
 CMD ["sh", "-c", "NODE_OPTIONS='--max-old-space-size=2048' pnpm run start"]
