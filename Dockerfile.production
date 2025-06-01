@@ -6,7 +6,7 @@ ENV PNPM_HOME=/usr/local/bin
 FROM base AS build
 WORKDIR /app
 
-RUN apk add --no-cache --virtual .gyp linux-headers python3 make g++ eudev-dev
+RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt/lists/*
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
 COPY package*.json ./
