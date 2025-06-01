@@ -16,6 +16,7 @@ RUN pnpm install tiny-secp256k1 || npm install tiny-secp256k1
 RUN pnpm install --frozen-lockfile || npm install --production
 
 COPY . .
+COPY ./env/.env.production .env
 
 RUN pnpm run build || npm run build
 
