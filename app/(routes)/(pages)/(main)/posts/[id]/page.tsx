@@ -17,7 +17,7 @@ import PostCommentsSection from '@/app/(core)/ui/Post/PostCommentsSection';
 import PostAttachmentsSection from '@/app/(core)/ui/Post/PostAttachmentsSection';
 
 export interface PostDetailsPageProps {
-  params: { id: string };
+  params: any;
 }
 
 const fetchData = async (id: string) => {

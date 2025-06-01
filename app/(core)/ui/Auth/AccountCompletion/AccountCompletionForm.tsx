@@ -67,7 +67,9 @@ const AccountCompletionForm: FC = () => {
         errors: {
           ...state.errors,
           nested: Object.fromEntries(
-            Object.entries(state.errors.nested || {}).filter(([key, _]) => key !== 'walletPublicKey'),
+            Object.entries(state.errors.nested || {}).filter(
+              ([key, _]) => key !== 'walletPublicKey',
+            ),
           ),
         },
         isWalletConnecting: false,

@@ -12,7 +12,7 @@ export interface ChatListProps extends HTMLAttributes<HTMLDivElement> {
   chatsPromise: Promise<void>;
 }
 
-const ChatList: FC<ChatListProps> = ({ chatsPromise, ...props }) => {
+const ChatList: FC<any> = ({ chatsPromise, ...props }) => {
   use(chatsPromise);
 
   const { chatList, chat: selectedChat } = useChatStorage();

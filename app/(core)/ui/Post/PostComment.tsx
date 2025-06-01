@@ -9,6 +9,7 @@ import { ApplicationRoutes } from '@/app/(core)/utils/routes.utils';
 import PostCommentOptionsButton from '@/app/(core)/ui/Post/PostCommentOptionsButton';
 import { GearIcon } from '@/app/(core)/ui/Icons/Icons';
 import PostCommentFooter from '@/app/(core)/ui/Post/PostCommentFooter';
+import { User } from '@/app/(core)/store/types/user.types';
 
 export interface PostCommentProps {
   post: Post;

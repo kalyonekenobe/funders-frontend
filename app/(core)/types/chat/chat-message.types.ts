@@ -1,8 +1,8 @@
-import { ChatMessageStatuses } from "@/app/(core)/enums/chat.enum";
-import { User } from "@/app/(core)/store/types/user.types";
-import { ChatMessageAttachment } from "@/app/(core)/types/chat-message-attachment.types";
-import { ChatMessageReaction } from "@/app/(core)/types/chat-message-reaction.types";
-import { Chat } from "@/app/(core)/types/chat.types";
+import { ChatMessageStatuses } from '@/app/(core)/enums/chat.enum';
+import { User } from '@/app/(core)/store/types/user.types';
+import { ChatMessageAttachment } from '@/app/(core)/types/chat/chat-message-attachment.types';
+import { ChatMessageReaction } from '@/app/(core)/types/chat/chat-message-reaction.types';
+import { Chat } from '@/app/(core)/types/chat/chat.types';
 
 export interface ChatMessage {
   id: string;

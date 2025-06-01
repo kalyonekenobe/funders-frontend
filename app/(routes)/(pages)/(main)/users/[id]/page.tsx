@@ -6,9 +6,7 @@ import { notFound } from 'next/navigation';
 import { FC } from 'react';
 
 export interface UserDetailsPageProps {
-  params: {
-    id: string;
-  };
+  params: any;
 }
 
 const fetchData = async (id: string) => {

@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 };
 
 export interface EditPostPageProps {
-  params: { id: string };
+  params: any;
 }
 
 const fetchData = async (id: string) => {

@@ -8,6 +8,7 @@ import AddPostCommentButton from '@/app/(core)/ui/Post/AddPostCommentButton';
 import { flattenComments, prepareComments } from '@/app/(core)/utils/comments.utils';
 import { FC, HTMLAttributes, useEffect, useState } from 'react';
 import PostCommentComponent from '@/app/(core)/ui/Post/PostComment';
+import { User } from '@/app/(core)/store/types/user.types';
 
 export interface PostCommentsSectionProps extends HTMLAttributes<HTMLDivElement> {
   comments: PostComment[];

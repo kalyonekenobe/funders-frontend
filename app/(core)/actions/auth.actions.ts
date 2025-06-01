@@ -13,7 +13,6 @@ import { AuthProviders } from '@/app/(core)/utils/auth.utils';
 import { ApplicationRoutes } from '@/app/(core)/utils/routes.utils';
 import { applySetRequestCookies, resolveUrl } from '@/app/(core)/utils/app.utils';
 import { parseCookieString } from '@/app/(core)/utils/cookies.utils';
-import _ from 'lodash';
 import { User } from '@/app/(core)/store/types/user.types';
 
 export const signIn = async (state: any, formData: FormData) => {
@@ -354,7 +353,7 @@ export const extractAccountCompletionMetadata = async (): Promise<{
     return {
       notify: true,
       data: {
-        error: `An error occurred when receiving data from ${_.capitalize(
+        error: `An error occurred when receiving data from ${capitalize(
           provider || 'auth provider',
         )}`,
         redirectUrl: referer,
@@ -453,4 +452,12 @@ export const updateSession = async (request: NextRequest, response: NextResponse
   }
 
   return { authenticatedUser: null };
+};
+
+const capitalize = (str: string): string => {
+  if (!str) {
+    return str;
+  }
+
+  return str.charAt(0).toUpperCase() + str.slice(1);
 };

@@ -5,6 +5,7 @@ import { useOutsideClick } from '@/app/(core)/hooks/dom.hooks';
 import useNotification from '@/app/(core)/hooks/notifications.hooks';
 import { AuthInfo } from '@/app/(core)/store/types/app.types';
 import { PostComment } from '@/app/(core)/store/types/post-comment.types';
+import { User } from '@/app/(core)/store/types/user.types';
 import { EditIcon, FlagIcon, RemoveIcon } from '@/app/(core)/ui/Icons/Icons';
 import Modal from '@/app/(core)/ui/Modal/Modal';
 import EditPostCommentButton from '@/app/(core)/ui/Post/EditPostCommentButton';
