@@ -36,6 +36,12 @@ COPY --chown=node:node --from=build /app/package.json /app/pnpm-lock.yaml ./
 COPY --chown=node:node --from=build /app/node_modules ./node_modules
 COPY --chown=node:node --from=build /app/public ./public
 COPY --chown=node:node --from=build /app/.next ./.next
+COPY --chown=node:node --from=build /app/nextjs.config.js ./nextjs.config.js
+COPY --chown=node:node --from=build /app/env.config.ts ./env.config.ts
+COPY --chown=node:node --from=build /app/next-env.d.ts ./next-env.d.ts
+COPY --chown=node:node --from=build /app/middleware.ts ./middleware.ts
+COPY --chown=node:node --from=build /app/postcss.config.js ./postcss.config.js
+COPY --chown=node:node --from=build /app/tailwind.config.ts ./tailwind.config.ts
 
 CMD ["sh", "-c", "NODE_OPTIONS='--max-old-space-size=2048' pnpm run start"]
 
